@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sparks &amp; Circuits Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: friendly electrical workbook on graph paper; color-coded unit tabs, then notes, a hands-on model, practice problems, and a screenshot card at the end. */
+:root{
+  --bg:#EEF3F6; --paper:#FFFFFF; --grid:rgba(30,90,140,.07);
+  --ink:#1A2733; --muted:#5A6A78; --line:#D3DDE5; --soft:#F4F7FA;
+  --mark:#F4B92A; --good:#1E8A4F; --good-soft:#DFF3E7; --bad:#C2412D; --bad-soft:#FBE4DF; --hint-soft:#E6F0FB;
+  --u1:#C2410C; --u2:#1F6FD6; --u3:#0E8577; --u4:#9D2F9E; --u-sum:#1A2733;
+  --u:var(--u1);
+  --f-display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111920; --paper:#18222B; --grid:rgba(120,180,230,.05);
+  --ink:#E6EDF2; --muted:#9AABB8; --line:#2E3C48; --soft:#1F2B35;
+  --mark:#F4B92A; --good:#5DCB8E; --good-soft:#163222; --bad:#F08670; --bad-soft:#3B1E18; --hint-soft:#182B40;
+  --u1:#F59255; --u2:#6AA8F5; --u3:#3FC4B3; --u4:#D77BD8; --u-sum:#E6EDF2; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#111920; --paper:#18222B; --grid:rgba(120,180,230,.05);
+  --ink:#E6EDF2; --muted:#9AABB8; --line:#2E3C48; --soft:#1F2B35;
+  --mark:#F4B92A; --good:#5DCB8E; --good-soft:#163222; --bad:#F08670; --bad-soft:#3B1E18; --hint-soft:#182B40;
+  --u1:#F59255; --u2:#6AA8F5; --u3:#3FC4B3; --u4:#D77BD8; --u-sum:#E6EDF2; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2.3rem,7vw,3.4rem);font-weight:800}
+h2{font-size:clamp(1.7rem,5vw,2.2rem);font-weight:800}
+h3{font-size:1.35rem;font-weight:700;color:var(--u)}
+p{margin:0}
+strong{font-weight:600}
+.eyebrow{font-family:var(--f-body);font-weight:600;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:10px}
+header .sub{color:var(--muted);max-width:60ch}
+.meter{display:flex;align-items:center;gap:12px;font-weight:500;font-size:.9rem;font-variant-numeric:tabular-nums}
+.bar{flex:1;height:14px;border-radius:99px;background:var(--line);position:relative;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--mark);transition:width .5s}
+
+nav.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.segb{min-height:44px;touch-action:manipulation;font-family:var(--f-body);font-size:.9rem;font-weight:500;padding:6px 12px;border:2px solid var(--line);border-radius:99px;background:var(--paper);color:var(--ink);cursor:pointer}
+.segb[aria-pressed="true"]{border-color:var(--u);background:var(--u);color:#fff}
+.segb:focus-visible{outline:3px solid var(--u);outline-offset:2px}
+@media (max-width:640px){nav.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}nav.tabs .tab:last-child{grid-column:1/-1}}
+.tab{--u:var(--u1);font-family:var(--f-display);font-size:1.15rem;font-weight:700;background:var(--paper);color:var(--ink);
+  border:2px solid var(--line);border-radius:14px;padding:6px 12px 4px;min-height:56px;cursor:pointer;display:grid;grid-template-columns:auto auto;column-gap:8px;align-items:center;justify-content:center;touch-action:manipulation;line-height:1.1}
+.tab small{grid-column:2}
+.tab{text-align:left}
+.tab small{font-family:var(--f-body);font-size:.75rem;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab .dot{width:12px;height:12px;border-radius:50%;background:var(--u);flex:none}
+.tab[aria-selected="true"]{border-color:var(--u);box-shadow:0 3px 0 var(--u)}
+.tab.done small{color:var(--good)}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--u);outline-offset:2px}
+
+.sheet{background:var(--paper);border:2px solid var(--line);border-top:8px solid var(--u);border-radius:20px;padding:clamp(18px,4vw,34px);display:flex;flex-direction:column;gap:24px}
+.lesson{display:flex;flex-direction:column;gap:16px;max-width:66ch}
+.bigidea{font-size:1.15rem;line-height:1.55}
+.lesson ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.vocab{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.vocab div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:.92rem}
+.vocab b{display:block;font-family:var(--f-display);font-size:1.15rem;color:var(--u)}
+.rules{display:flex;flex-direction:column;gap:10px}
+.rule{border:2px solid var(--u);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.rule b{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.rule span{font-size:.9rem;color:var(--muted)}
+.example{border-radius:14px;background:color-mix(in srgb,var(--mark) 16%,var(--paper));padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.example .eyebrow{color:var(--ink)}
+.steps{font-family:var(--f-mono);font-size:.9rem;display:flex;flex-direction:column;gap:2px}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+.fig{border:2px dashed var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.fig svg{width:100%;height:auto;max-width:min(100%,540px);display:block;margin:0 auto}
+.fig .cap{font-size:.88rem;color:var(--muted)}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-weight:500;font-size:.9rem}
+.ctrl input[type=range]{flex:1;min-width:160px;height:32px;accent-color:var(--u)}
+@media (min-width:700px) and (max-width:1100px){.wrap{max-width:none;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px))}body{font-size:18px}}
+@media (hover:none){.choice:hover:not(:disabled){border-color:var(--line)}}
+.readout{display:flex;flex-wrap:wrap;gap:8px;font-size:.9rem;font-variant-numeric:tabular-nums}
+.readout span{background:var(--soft);border-radius:99px;padding:3px 12px}
+.readout b{color:var(--u);font-weight:600}
+.classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.classes div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:.92rem}
+.classes strong{font-family:var(--f-display);font-size:1.2rem;display:block;color:var(--u)}
+
+.setHead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-top:2px solid var(--line);padding-top:18px}
+.qs{display:flex;flex-direction:column;gap:12px}
+.q{border:2px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.q.ok{border-color:var(--good)}
+.q.rev{border-color:var(--mark)}
+.qtop{display:flex;gap:12px;align-items:flex-start}
+.qid{font-family:var(--f-display);font-weight:700;font-size:1rem;flex:none;width:2.6em;height:2.2em;border-radius:10px;background:var(--soft);color:var(--u);display:grid;place-items:center}
+.qtext{flex:1;min-width:0;padding-top:.15em}
+.pill{font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:99px;flex:none}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.rev{background:color-mix(in srgb,var(--mark) 25%,var(--paper));color:var(--ink)}
+.ans,.choices,.fb{padding-left:calc(2.6em + 12px)}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input[type=text]{font-family:var(--f-mono);font-size:1.1rem;width:8em;min-height:44px;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+.ans input[type=text]:focus{border-color:var(--u)}
+.unit{font-weight:500;color:var(--muted)}
+button.btn{min-height:44px;touch-action:manipulation;font-family:var(--f-display);font-weight:700;font-size:1.05rem;padding:6px 16px 4px;border:2px solid var(--u);border-radius:12px;background:var(--u);color:#fff;cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choice{min-height:44px;touch-action:manipulation;font-family:var(--f-body);font-size:.95rem;padding:8px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.choice:hover:not(:disabled){border-color:var(--u)}
+.choice.picked-bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.choice.picked-ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.choice:disabled{cursor:default}
+.fb{font-size:.95rem}
+.fb.bad{color:var(--bad)}
+.hint,.sol{margin-left:calc(2.6em + 12px);font-size:.95rem;padding:10px 14px;border-radius:12px}
+.hint{background:var(--hint-soft)}
+.sol{background:var(--good-soft);color:var(--ink)}
+.q.rev .sol{background:color-mix(in srgb,var(--mark) 15%,var(--paper))}
+.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.foot button{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.confirm{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.sub-card{border:3px solid var(--u);border-radius:20px;background:var(--paper);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.sub-card .sc-head{background:var(--u);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 18px}
+.sub-card .sc-head h3{color:#fff;font-size:1.45rem}
+.sub-card .sc-head span{font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.sc-body{padding:18px;display:flex;flex-direction:column;gap:14px}
+.sc-row{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:flex-end}
+.sc-field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sc-field label,.sc-field .lbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sc-field input{font-family:var(--f-display);font-size:1.5rem;font-weight:700;border:none;border-bottom:2px solid var(--ink);background:transparent;color:var(--ink);padding:2px 0;width:min(320px,80vw)}
+.sc-field input::placeholder{color:var(--muted);font-weight:600}
+.sc-field .val{font-size:1rem;font-weight:500;font-variant-numeric:tabular-nums}
+.sc-bar{display:flex;align-items:center;gap:14px}
+.sc-bar .bar{height:28px}
+.sc-bar .bar>i{background:var(--u)}
+.sc-bar .num{font-family:var(--f-display);font-size:2.2rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;min-width:3em;text-align:right}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+.chip{font-size:.82rem;font-weight:600;padding:5px 6px;border-radius:10px;border:2px solid var(--line);text-align:center;color:var(--muted)}
+.chip.ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.chip.rev{border-color:var(--mark);background:color-mix(in srgb,var(--mark) 22%,var(--paper));color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.stamp{position:absolute;right:18px;top:60px;font-family:var(--f-display);font-weight:800;font-size:1.5rem;color:var(--good);border:3px solid var(--good);border-radius:12px;padding:0 12px;transform:rotate(-6deg);background:var(--paper)}
+.cheer{font-family:var(--f-display);font-size:1.2rem;font-weight:700;color:var(--good)}
+
+.cert{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.cert .big{font-family:var(--f-display);font-size:clamp(2rem,7vw,3rem);font-weight:800;line-height:1}
+.cert .name{font-family:var(--f-display);font-size:2rem;font-weight:700;border-bottom:2px solid var(--ink);min-width:min(320px,100%);padding:0 12px}
+.sum-units{display:flex;flex-direction:column;gap:10px;width:min(100%,520px)}
+.sum-unit{display:grid;grid-template-columns:9em 1fr 3.5em;gap:12px;align-items:center;font-variant-numeric:tabular-nums}
+.sum-unit b{text-align:left;font-family:var(--f-display);font-size:1.2rem;color:var(--c)}
+.sum-unit .bar{height:18px}
+.sum-unit .bar>i{background:var(--c)}
+.sum-unit span{font-size:.9rem;font-weight:500;text-align:right}
+.stats{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;font-variant-numeric:tabular-nums}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-family:var(--f-display);font-size:1.8rem;font-weight:800;line-height:1.1}
+.stats span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.jump{font-size:.85rem;font-weight:500;color:var(--u);background:none;border:none;text-decoration:underline;cursor:pointer;padding:0;font-family:var(--f-body)}
+svg text{font-family:var(--f-body);font-size:13px;fill:var(--ink)}
+@media (max-width:520px){.ans,.choices,.fb{padding-left:0}.hint,.sol{margin-left:0}.stamp{top:auto;bottom:14px}}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Electrical engineering workbook · Middle school</span>
+    <h1>Sparks &amp; Circuits Lab</h1>
+    <p class="sub">Review how electricity flows, how Ohm’s law connects volts, amps and ohms, and how much energy the devices around you use. Read the notes, play with the model, then try the problems. You can do the units in any order.</p>
+    <div class="meter"><span id="mCount">0 / 0</span><div class="bar"><i id="mBar" style="width:0"></i></div><span id="mPct">0%</span></div>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <main class="sheet" id="sheet"></main>
+  <div class="foot">
+    <span>Pick the best answer. If you miss twice, you can see how to solve it. When a unit is done, screenshot its card at the bottom and turn it in on Canvas.</span>
+    <span id="footCtl"></span>
+  </div>
+</div>
+
+<script>
+const UNITS = [
+{ id:'basics', name:'Circuits', color:'--u1', lesson:`
+  <h2>Unit 1 · Circuit basics</h2>
+  <p class="bigidea"><strong>Big idea:</strong> Electricity only flows when it has a complete loop to travel around. That loop is called a circuit. Break the loop anywhere and everything stops.</p>
+  <div class="vocab">
+    <div><b>Circuit</b>A complete path that electricity flows around, from the battery and back.</div>
+    <div><b>Conductor</b>A material electricity flows through easily, like copper or aluminum.</div>
+    <div><b>Insulator</b>A material that blocks electricity, like rubber, plastic or wood.</div>
+    <div><b>Switch</b>A gate that opens or closes the loop.</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>Closed circuit = current flows</b><span>The loop is complete, so the bulb lights.</span></div>
+    <div class="rule"><b>Open circuit = no current</b><span>There is a gap somewhere. An "open" switch means the bulb is off.</span></div>
+    <div class="rule"><b>Short circuit = danger</b><span>Current skips the device through a path with almost no resistance. Wires get hot fast.</span></div>
+  </div>
+  <h3>Circuit symbols</h3>
+  <div class="classes">
+    <div><strong>Battery</strong>A long line and a short line. The long line is the + side.</div>
+    <div><strong>Resistor</strong>A zigzag line. It slows down current.</div>
+    <div><strong>Bulb</strong>A circle with an X or a loop inside.</div>
+    <div><strong>Switch</strong>A line that lifts up to make a gap.</div>
+  </div>
+  <div class="fig">
+    <span class="eyebrow">Try it · What closes the gap?</span>
+    <svg id="basicSvg" viewBox="0 0 380 210" role="img" aria-label="Circuit with a battery, bulb and a gap"></svg>
+    <div class="seg" id="matBtns" role="group" aria-label="Material in the gap"></div>
+    <div class="readout" id="basicOut"></div>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A flashlight won’t turn on, even with new batteries.</p>
+    <div class="steps"><span>Check the loop: battery → switch → bulb → back to battery.</span><span>A broken bulb or a dirty switch makes a gap, so it’s an open circuit.</span></div>
+  </div>`,
+  qs:[
+  {p:'What does a circuit need for electricity to flow?',o:['A complete loop back to the battery','Just a battery','Just a light bulb','A gap in the wire'],h:'Electricity needs a path to travel all the way around.',s:'It needs a complete, closed loop from the battery, through the device, and back.'},
+  {p:'A switch is OPEN. What happens to the bulb?',o:['It is off','It is on','It gets brighter','It flickers'],h:'Open means there is a gap.',s:'An open switch makes a gap, so no current flows and the bulb is off.'},
+  {p:'Which material is the best conductor?',o:['Copper wire','Rubber band','Plastic straw','Wooden stick'],h:'Most wires are made of it.',s:'Copper is a metal and a great conductor. That’s why wires are made of it.'},
+  {p:'Why are wires covered in plastic?',o:['Plastic is an insulator that keeps electricity in the wire and protects you','Plastic makes the current faster','Plastic makes the wire a conductor','It’s only for color'],h:'Is plastic a conductor or an insulator?',s:'Plastic is an insulator. It keeps the current inside the wire so it can’t shock you or jump to other wires.'},
+  {p:'What does a battery do in a circuit?',o:['It gives the push (voltage) that moves the current','It blocks the current','It turns electricity into light','It measures the current'],h:'Think of it as a pump.',s:'A battery provides the voltage, the push that moves current around the loop.'},
+  {p:'What is a short circuit?',o:['Current takes a shortcut with almost no resistance and gets dangerously hot','A circuit with short wires','A circuit with the switch off','A circuit with one bulb'],h:'Read the "Short circuit" rule.',s:'In a short circuit, current skips the device through an easy path. Lots of current flows and wires heat up fast.'},
+  {p:'In a circuit diagram, what does a zigzag line mean?',o:['A resistor','A battery','A switch','A wire'],h:'Check the circuit symbols.',s:'A zigzag line is a resistor, which slows down current.'},
+  {p:'You use different objects to close a gap in a circuit. Which one will NOT light the bulb?',o:['A rubber eraser','Aluminum foil','A metal paper clip','A coin'],h:'Which one is not a metal?',s:'Rubber is an insulator, so the gap stays open. The metal objects are conductors.'},
+  {p:'Current is measured in which unit?',o:['Amps (A)','Volts (V)','Ohms (Ω)','Watts (W)'],h:'Check the vocabulary in Unit 2.',s:'Current is measured in amps.'},
+  {p:'In a flashlight, which part lets you choose whether current flows or not?',o:['The switch','The battery','The bulb','The case'],h:'It opens and closes the loop.',s:'The switch opens or closes the circuit.'},
+  ]},
+{ id:'ohms', name:'Ohm’s Law', color:'--u2', lesson:`
+  <h2>Unit 2 · Ohm’s law</h2>
+  <p class="bigidea"><strong>Big idea:</strong> Picture water in pipes. The battery is a pump, current is the water flowing, and resistance is a narrow pipe. More push means more flow. A narrower pipe means less flow.</p>
+  <div class="vocab">
+    <div><b>Voltage (V)</b>The push from the battery, in volts.</div>
+    <div><b>Current (I)</b>How much electricity flows, in amps (A).</div>
+    <div><b>Resistance (R)</b>How hard it is for current to flow, in ohms (Ω).</div>
+    <div><b>Milliamp (mA)</b>A tiny amount of current. 1000 mA = 1 A.</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>Volts = Amps × Ohms</b><span>This is Ohm’s law (V = I × R).</span></div>
+    <div class="rule"><b>Amps = Volts ÷ Ohms</b><span>Use this to find the current.</span></div>
+    <div class="rule"><b>Ohms = Volts ÷ Amps</b><span>Use this to find the resistance.</span></div>
+  </div>
+  <ul>
+    <li>More voltage → more current.</li>
+    <li>More resistance → less current.</li>
+  </ul>
+  <div class="fig">
+    <span class="eyebrow">Try it · Change the push and the resistance</span>
+    <svg id="ohmSvg" viewBox="0 0 380 200" role="img" aria-label="Circuit with a bulb whose brightness changes"></svg>
+    <div class="ctrl"><label for="oV">Voltage</label><input type="range" id="oV" min="1" max="12" step="1" value="6"></div>
+    <div class="ctrl"><label for="oR">Resistance</label><input type="range" id="oR" min="1" max="12" step="1" value="3"></div>
+    <div class="readout" id="ohmOut"></div>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A 12 V battery is connected to a 4 Ω resistor. How much current flows?</p>
+    <div class="steps"><span>Amps = Volts ÷ Ohms</span><span>12 ÷ 4 = 3 A</span></div>
+  </div>`,
+  qs:[
+  {p:'A 9 V battery is connected to a 3 Ω resistor. How much current flows?',o:['3 A','27 A','0.33 A','12 A'],h:'Amps = Volts ÷ Ohms',s:'9 ÷ 3 = 3 A'},
+  {p:'2 A of current flows through a 6 Ω resistor. What is the voltage?',o:['12 V','3 V','8 V','0.33 V'],h:'Volts = Amps × Ohms',s:'2 × 6 = 12 V'},
+  {p:'A 12 V battery pushes 4 A through a light. What is the light’s resistance?',o:['3 Ω','48 Ω','16 Ω','0.33 Ω'],h:'Ohms = Volts ÷ Amps',s:'12 ÷ 4 = 3 Ω'},
+  {p:'You double the voltage but keep the same resistance. What happens to the current?',o:['It doubles','It is cut in half','It stays the same','It drops to zero'],h:'More push → more flow.',s:'The current doubles. Amps = Volts ÷ Ohms, so twice the volts means twice the amps.'},
+  {p:'You make the resistance bigger but keep the same voltage. What happens to the current?',o:['It gets smaller','It gets bigger','It stays the same','It reverses'],h:'A narrower pipe lets less water through.',s:'The current gets smaller, because more resistance makes it harder for current to flow.'},
+  {p:'A 6 V battery is connected to a 2 Ω resistor. How much current flows?',o:['3 A','12 A','8 A','4 A'],h:'Amps = Volts ÷ Ohms',s:'6 ÷ 2 = 3 A'},
+  {p:'A 1.5 V AA battery pushes 0.5 A through a tiny motor. What is the motor’s resistance?',o:['3 Ω','0.75 Ω','2 Ω','1 Ω'],h:'Ohms = Volts ÷ Amps',s:'1.5 ÷ 0.5 = 3 Ω'},
+  {p:'A 120 V outlet is connected to a 240 Ω heater coil. How much current flows?',o:['0.5 A','2 A','360 A','28,800 A'],h:'Amps = Volts ÷ Ohms',s:'120 ÷ 240 = 0.5 A'},
+  {p:'An LED circuit runs on 5 V and should only have 0.02 A of current. How much total resistance does it need?',o:['250 Ω','0.1 Ω','100 Ω','25 Ω'],h:'Ohms = Volts ÷ Amps',s:'5 ÷ 0.02 = 250 Ω'},
+  {p:'An LED uses 20 mA of current. How many amps is that?',o:['0.02 A','0.2 A','2 A','20,000 A'],h:'1000 mA = 1 A, so divide by 1000.',s:'20 ÷ 1000 = 0.02 A'},
+  ]},
+{ id:'series', name:'Series & Parallel', color:'--u3', lesson:`
+  <h2>Unit 3 · Series and parallel</h2>
+  <p class="bigidea"><strong>Big idea:</strong> There are two ways to connect more than one device. Put them in a single line (series) or give each one its own path (parallel). The choice changes how bright things are and what happens when one breaks.</p>
+  <div class="vocab">
+    <div><b>Series</b>All parts on one path, one after another.</div>
+    <div><b>Parallel</b>Each part on its own branch, side by side.</div>
+    <div><b>Branch</b>One of the separate paths in a parallel circuit.</div>
+    <div><b>Total resistance</b>The resistance of the whole circuit put together.</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>Series: add the resistances</b><span>2 Ω + 3 Ω = 5 Ω. The same current goes through every part.</span></div>
+    <div class="rule"><b>Series: one breaks, all go out</b><span>A broken part breaks the only path.</span></div>
+    <div class="rule"><b>Parallel: equal resistors → divide by how many</b><span>Two 10 Ω resistors = 5 Ω. Three 6 Ω resistors = 2 Ω.</span></div>
+    <div class="rule"><b>Parallel: each branch gets the full voltage</b><span>One bulb can break and the others stay on.</span></div>
+  </div>
+  <div class="fig">
+    <span class="eyebrow">Try it · Wire up some bulbs</span>
+    <svg id="spSvg" viewBox="0 0 380 210" role="img" aria-label="Bulbs wired in series or parallel"></svg>
+    <div class="seg" id="spMode" role="group" aria-label="Wiring type"></div>
+    <div class="ctrl"><label for="spN">Number of bulbs</label><input type="range" id="spN" min="1" max="3" step="1" value="2"></div>
+    <div class="seg" id="spBreak" role="group" aria-label="Break a bulb"></div>
+    <div class="readout" id="spOut"></div>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A 12 V battery is connected to a 2 Ω and a 4 Ω resistor in series.</p>
+    <div class="steps"><span>Total resistance = 2 + 4 = 6 Ω</span><span>Current = 12 ÷ 6 = 2 A</span></div>
+  </div>`,
+  qs:[
+  {p:'What is a series circuit?',o:['All parts on one single path','Each part on its own branch','A circuit with no battery','A circuit with a switch'],h:'Check the vocabulary.',s:'In series, all parts are lined up on one path, one after another.'},
+  {p:'Resistors of 2 Ω, 3 Ω and 5 Ω are connected in series. What is the total resistance?',o:['10 Ω','30 Ω','1 Ω','5 Ω'],h:'In series, just add them.',s:'2 + 3 + 5 = 10 Ω'},
+  {p:'A 12 V battery is connected to a 2 Ω and a 4 Ω resistor in series. How much current flows?',o:['2 A','6 A','3 A','72 A'],h:'Add the resistors first, then use Amps = Volts ÷ Ohms.',s:'Total = 6 Ω → 12 ÷ 6 = 2 A'},
+  {p:'Holiday lights are wired in series. One bulb burns out. What happens?',o:['All the bulbs go out','Only that bulb goes out','The others get brighter','Nothing changes'],h:'Series has only one path.',s:'All of them go out, because the broken bulb breaks the only path.'},
+  {p:'The lights in your house are wired in parallel. One bulb burns out. What happens?',o:['The other lights stay on','All the lights go out','The others get dimmer','The breaker trips'],h:'Each light has its own branch.',s:'The others stay on, because each light has its own path.'},
+  {p:'Two 10 Ω resistors are connected in parallel. What is the total resistance?',o:['5 Ω','20 Ω','10 Ω','100 Ω'],h:'Equal resistors in parallel: divide by how many there are.',s:'10 ÷ 2 = 5 Ω'},
+  {p:'You add more bulbs to a SERIES circuit. What happens to each bulb’s brightness?',o:['Each bulb gets dimmer','Each bulb gets brighter','Nothing changes','Only the first bulb dims'],h:'Try it in the model.',s:'They get dimmer. More bulbs means more total resistance and less current through each one.'},
+  {p:'In a parallel circuit, how much voltage does each branch get?',o:['The full battery voltage','Half the battery voltage','No voltage','It depends on the wire color'],h:'Read the parallel rules.',s:'Each branch is connected straight across the battery, so each one gets the full voltage.'},
+  {p:'In a series circuit, how does the current compare in each part?',o:['It is the same everywhere','It is biggest at the battery','It is zero in the last part','It splits between parts'],h:'There is only one path.',s:'The current is the same everywhere, because there is only one path to take.'},
+  {p:'Three 6 Ω resistors are connected in parallel. What is the total resistance?',o:['2 Ω','18 Ω','6 Ω','3 Ω'],h:'Equal resistors in parallel: divide by how many there are.',s:'6 ÷ 3 = 2 Ω'},
+  ]},
+{ id:'power', name:'Power', color:'--u4', lesson:`
+  <h2>Unit 4 · Power and energy</h2>
+  <p class="bigidea"><strong>Big idea:</strong> Power tells you how fast a device uses electricity. Energy is how much it uses over time. Your family’s electric bill is based on energy.</p>
+  <div class="vocab">
+    <div><b>Power</b>How fast energy is used, in watts (W).</div>
+    <div><b>Kilowatt (kW)</b>1000 watts.</div>
+    <div><b>Kilowatt-hour (kWh)</b>The energy used by 1000 W running for 1 hour. Electric bills use this.</div>
+    <div><b>Circuit breaker</b>A safety switch that shuts off power if too much current flows.</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>Watts = Volts × Amps</b><span>Also: Amps = Watts ÷ Volts.</span></div>
+    <div class="rule"><b>Energy (kWh) = kilowatts × hours</b><span>Change watts to kW first by dividing by 1000.</span></div>
+    <div class="rule"><b>Cost = kWh × price per kWh</b><span>Electricity often costs around $0.15 per kWh.</span></div>
+  </div>
+  <div class="fig">
+    <span class="eyebrow">Try it · What does it cost to run?</span>
+    <div class="seg" id="appBtns" role="group" aria-label="Pick a device"></div>
+    <div class="ctrl"><label for="pH">Hours per day</label><input type="range" id="pH" min="1" max="12" step="1" value="3"></div>
+    <svg id="powSvg" viewBox="0 0 380 150" role="img" aria-label="Energy and cost for the selected device"></svg>
+    <div class="readout" id="powOut"></div>
+    <span class="cap">Price used: $0.15 per kWh.</span>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A 500 W gaming console runs for 4 hours.</p>
+    <div class="steps"><span>500 W = 0.5 kW</span><span>Energy = 0.5 × 4 = 2 kWh</span><span>Cost = 2 × $0.15 = $0.30</span></div>
+  </div>`,
+  qs:[
+  {p:'What unit is power measured in?',o:['Watts (W)','Volts (V)','Ohms (Ω)','Amps (A)'],h:'Check the vocabulary.',s:'Power is measured in watts.'},
+  {p:'A phone charger gives 5 V at 2 A. How much power is that?',o:['10 W','2.5 W','7 W','3 W'],h:'Watts = Volts × Amps',s:'5 × 2 = 10 W'},
+  {p:'A 60 W lamp plugs into a 120 V outlet. How much current does it use?',o:['0.5 A','2 A','180 A','7200 A'],h:'Amps = Watts ÷ Volts',s:'60 ÷ 120 = 0.5 A'},
+  {p:'A 1000 W microwave runs for 2 hours. How much energy does it use?',o:['2 kWh','2000 kWh','500 kWh','0.5 kWh'],h:'1000 W = 1 kW. Then kW × hours.',s:'1 kW × 2 h = 2 kWh'},
+  {p:'A 100 W TV is on for 5 hours. How much energy does it use?',o:['0.5 kWh','500 kWh','20 kWh','5 kWh'],h:'100 W = 0.1 kW.',s:'0.1 kW × 5 h = 0.5 kWh'},
+  {p:'Electricity costs $0.15 per kWh. How much does 2 kWh cost?',o:['$0.30','$0.075','$13.33','$3.00'],h:'Cost = kWh × price',s:'2 × $0.15 = $0.30'},
+  {p:'Which device uses the most power?',o:['1500 W hair dryer','10 W phone charger','60 W lamp','9 W LED bulb'],h:'Look for the biggest number of watts.',s:'The 1500 W hair dryer uses the most power.'},
+  {p:'A 9 W LED bulb gives the same light as an old 60 W bulb. How many watts does the LED save?',o:['51 W','69 W','540 W','6.7 W'],h:'Subtract.',s:'60 − 9 = 51 W saved'},
+  {p:'A 1500 W space heater plugs into a 120 V outlet. How much current does it use?',o:['12.5 A','180,000 A','1380 A','0.08 A'],h:'Amps = Watts ÷ Volts',s:'1500 ÷ 120 = 12.5 A'},
+  {p:'Why does a circuit breaker "trip" (shut off)?',o:['Too much current is flowing, which could overheat the wires','The voltage is too low','A light bulb is off','The wires are too cold'],h:'Read the vocabulary.',s:'A breaker shuts off power when too much current flows, so the wires don’t overheat and start a fire.'},
+  ]},
+];
+UNITS.forEach(u=>u.qs.forEach((q,i)=>{
+  q.id=u.name[0]+(i+1); q.t='mc';
+  // Options are written correct-first; rotate so the right answer lands in different spots.
+  let h=7; for(const ch of q.id+q.p.slice(0,12)) h=(h*31+ch.charCodeAt(0))>>>0;
+  const k=h%q.o.length, c=q.o[0];
+  q.o=q.o.slice(k).concat(q.o.slice(0,k)); q.a=q.o.indexOf(c);
+}));
+
+const ALL = UNITS.flatMap(u=>u.qs);
+const CHEERS=['Nice work!','You got it!','Correct!','Nailed it!','Great job!','That’s right!'];
+
+const KEY='scl-progress-v1';
+let S={q:{},tab:'basics',name:''};
+try{const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const st=id=>S.q[id]||(S.q[id]={tries:0,done:false,how:null,hint:false,pick:[]});
+const unitDone=u=>u.qs.every(q=>S.q[q.id]&&S.q[q.id].done);
+const unitCount=u=>u.qs.filter(q=>S.q[q.id]&&S.q[q.id].done).length;
+const allDone=()=>UNITS.every(unitDone);
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Number.isInteger(n)?String(n):String(+n.toFixed(3));
+
+function setColor(){const u=UNITS.find(u=>u.id===S.tab);document.getElementById('sheet').style.setProperty('--u',`var(${u?u.color:'--u-sum'})`);}
+function renderMeter(){
+  const n=ALL.filter(q=>S.q[q.id]&&S.q[q.id].done).length, pct=Math.round(n/ALL.length*100);
+  mCount.textContent=`${n} / ${ALL.length} done`; mPct.textContent=pct+'%'; mBar.style.width=pct+'%';
+}
+function renderTabs(){
+  const tabs=document.getElementById('tabs'); tabs.innerHTML='';
+  UNITS.forEach(u=>{
+    const b=document.createElement('button'); b.className='tab'+(unitDone(u)?' done':''); b.role='tab';
+    b.style.setProperty('--u',`var(${u.color})`);
+    b.setAttribute('aria-selected',S.tab===u.id);
+    b.innerHTML=`<span class="dot"></span>${u.name}<small>${unitCount(u)}/${u.qs.length}</small>`;
+    b.onclick=()=>{S.tab=u.id;save();render();};
+    tabs.appendChild(b);
+  });
+  const c=document.createElement('button'); c.className='tab'+(allDone()?' done':''); c.role='tab';
+  c.style.setProperty('--u','var(--u-sum)');
+  c.setAttribute('aria-selected',S.tab==='cert'); c.innerHTML=`<span class="dot"></span>Summary<small>${ALL.filter(q=>S.q[q.id]?.done).length}/${ALL.length}</small>`;
+  c.onclick=()=>{S.tab='cert';save();render();}; tabs.appendChild(c);
+}
+
+function qHTML(q){
+  const s=S.q[q.id]||{}; const cls=s.done?(s.how==='correct'?'ok':'rev'):'';
+  let h=`<div class="q ${cls}" data-id="${q.id}"><div class="qtop"><span class="qid">${q.id}</span><div class="qtext">${q.p}</div>`;
+  if(s.done) h+=`<span class="pill ${cls}">${s.how==='correct'?'Got it':'Saw solution'}</span>`;
+  h+=`</div>`;
+  if(q.t==='num'){
+    h+=`<div class="ans"><input type="text" inputmode="decimal" id="in-${q.id}" aria-label="Your answer for ${q.id}" placeholder="?" ${s.done?'disabled':''} value="${s.done&&s.how==='correct'?esc(s.val??''):''}" autocomplete="off"><span class="unit">${q.u||''}</span>
+      ${s.done?'':`<button class="btn" data-act="check">Check</button><button class="btn ghost" data-act="hint">${s.hint?'Hide hint':'Hint'}</button>`}
+      ${!s.done&&s.tries>=2?`<button class="btn ghost" data-act="reveal">Show me how</button>`:''}</div>`;
+  }else{
+    h+=`<div class="choices">${q.o.map((o,i)=>{
+      let c='choice'; if((s.pick||[]).includes(i)) c+= i===q.a?' picked-ok':' picked-bad';
+      if(s.done&&i===q.a&&!c.includes('picked-ok')) c+=' picked-ok';
+      return `<button class="${c}" data-act="pick" data-i="${i}" ${s.done?'disabled':''}>${o}</button>`;}).join('')}
+      ${!s.done?`<button class="btn ghost" data-act="hint">${s.hint?'Hide hint':'Hint'}</button>`:''}
+      ${!s.done&&s.tries>=2?`<button class="btn ghost" data-act="reveal">Show me how</button>`:''}</div>`;
+  }
+  if(s.msg&&!s.done) h+=`<div class="fb bad">${s.msg}</div>`;
+  if(s.hint&&!s.done) h+=`<div class="hint"><strong>Hint:</strong> ${q.h}</div>`;
+  if(s.done) h+=`<div class="sol">${s.how==='correct'?`<strong>${s.cheer||'Nice work!'}</strong> `:'<strong>Here’s how:</strong> '}${q.s}</div>`;
+  return h+`</div>`;
+}
+
+function renderUnit(u,i){
+  const sheet=document.getElementById('sheet');
+  sheet.innerHTML=`<section class="lesson">${u.lesson}</section>
+    <div class="setHead"><h2>Practice problems</h2><span class="eyebrow"><span id="setCount">${unitCount(u)} of ${u.qs.length} done</span> · <button class="jump" data-jump>Go to my completion card</button></span></div>
+    <div class="qs">${u.qs.map(qHTML).join('')}</div>
+    ${cardHTML(u,i)}`;
+  initModel(u.id);
+}
+
+const stampTime=()=>new Date().toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+function lastDone(qs){const t=qs.map(q=>S.q[q.id]?.at||0).reduce((a,b)=>Math.max(a,b),0);
+  return t?new Date(t).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';}
+function cardHTML(u,i){
+  const n=unitCount(u), tot=u.qs.length, pct=Math.round(n/tot*100);
+  const solved=u.qs.filter(q=>S.q[q.id]?.how==='correct').length, rev=u.qs.filter(q=>S.q[q.id]?.how==='revealed').length;
+  return `<section class="sub-card" id="subcard" aria-label="${u.name} completion card">
+    <div class="sc-head"><h3>Unit ${i+1}: ${u.name} · Completion card</h3><span>Sparks &amp; Circuits Lab</span></div>
+    ${n===tot?'<div class="stamp">COMPLETE!</div>':''}
+    <div class="sc-body">
+      <div class="sc-row">
+        <div class="sc-field"><label for="nameIn-${u.id}">My name</label><input type="text" id="nameIn-${u.id}" class="nameIn" placeholder="Type your name" value="${esc(S.name)}" autocomplete="name"></div>
+        <div class="sc-field"><span class="lbl">Date and time</span><span class="val clock">${stampTime()}</span></div>
+        <div class="sc-field"><span class="lbl">Last problem done</span><span class="val">${lastDone(u.qs)}</span></div>
+      </div>
+      <div class="sc-bar"><div class="bar"><i style="width:${pct}%"></i></div><span class="num">${pct}%</span></div>
+      <div class="sc-row">
+        <div class="sc-field"><span class="lbl">Done</span><span class="val">${n} / ${tot}</span></div>
+        <div class="sc-field"><span class="lbl">Got it myself</span><span class="val">${solved}</span></div>
+        <div class="sc-field"><span class="lbl">Saw solution</span><span class="val">${rev}</span></div>
+      </div>
+      <div class="chips">${u.qs.map(q=>{const s=S.q[q.id]||{};const c=s.done?(s.how==='correct'?'ok':'rev'):'';
+        return `<span class="chip ${c}">${q.id} ${s.done?(s.how==='correct'?'✓':'●'):'○'}</span>`;}).join('')}</div>
+      <div class="legend"><span>✓ got it</span><span>● saw solution</span><span>○ not done yet</span></div>
+      ${n===tot?`<p class="cheer">${u.name} finished! Take a screenshot of this card and turn it in on Canvas.</p>`:`<p style="color:var(--muted);font-size:.9rem">${tot-n} to go. When this bar hits 100%, screenshot this card for Canvas.</p>`}
+    </div></section>`;
+}
+function refreshCard(){
+  const el=document.getElementById('subcard'); if(!el) return;
+  const i=UNITS.findIndex(u=>u.id===S.tab); if(i<0) return;
+  el.outerHTML=cardHTML(UNITS[i],i);
+}
+
+function renderCert(){
+  const sheet=document.getElementById('sheet');
+  const first=ALL.filter(q=>S.q[q.id]?.how==='correct'&&S.q[q.id].tries===0).length;
+  const solved=ALL.filter(q=>S.q[q.id]?.how==='correct').length;
+  const rev=ALL.filter(q=>S.q[q.id]?.how==='revealed').length;
+  const n=ALL.filter(q=>S.q[q.id]?.done).length, pct=Math.round(n/ALL.length*100), done=allDone();
+  sheet.innerHTML=`<div class="cert"><span class="eyebrow">${done?'Certificate of completion':'My progress'}</span>
+    <div class="big">Sparks &amp; Circuits Lab</div>
+    <p>${done?'This certifies that':'Progress report for'}</p>
+    <div class="name" id="certName">${esc(S.name)||'&nbsp;'}</div>
+    <p>${done?`finished all ${ALL.length} problems on circuits, Ohm’s law, series and parallel, and power!`:`has finished ${n} of ${ALL.length} problems (${pct}%).`}</p>
+    <div class="sum-units">${UNITS.map(u=>{const c=unitCount(u),p=Math.round(c/u.qs.length*100);
+      return `<div class="sum-unit" style="--c:var(${u.color})"><b>${u.name}</b><div class="bar"><i style="width:${p}%"></i></div><span>${c}/${u.qs.length}</span></div>`;}).join('')}</div>
+    <div class="stats"><div><b>${solved}</b><span>Got it myself</span></div><div><b>${first}</b><span>First try</span></div><div><b>${rev}</b><span>Saw solution</span></div></div>
+    <p class="clock" style="color:var(--muted)">${stampTime()}</p>
+    <div class="sc-field" style="align-items:center"><label for="nameIn-cert">My name</label><input type="text" id="nameIn-cert" class="nameIn" placeholder="Type your name" value="${esc(S.name)}" autocomplete="name" style="text-align:center"></div>
+  </div>`;
+}
+
+let gearRAF=null;
+function render(){
+  if(gearRAF){cancelAnimationFrame(gearRAF);gearRAF=null;}
+  setColor(); renderMeter(); renderTabs();
+  if(S.tab==='cert') renderCert();
+  else { let i=UNITS.findIndex(u=>u.id===S.tab); if(i<0)i=0; renderUnit(UNITS[i],i); }
+  renderFoot();
+}
+function rerenderQ(id){
+  const el=document.querySelector(`.q[data-id="${id}"]`); if(!el){render();return;}
+  const q=ALL.find(x=>x.id===id); el.outerHTML=qHTML(q);
+  const u=UNITS.find(u=>u.qs.includes(q));
+  renderMeter(); renderTabs();
+  const sc=document.getElementById('setCount'); if(sc) sc.textContent=`${unitCount(u)} of ${u.qs.length} done`;
+  refreshCard();
+  const inp=document.getElementById('in-'+id); if(inp&&!inp.disabled) inp.focus();
+}
+function win(s){s.done=true;s.how='correct';s.msg='';s.at=Date.now();s.cheer=CHEERS[Math.floor(Math.random()*CHEERS.length)];}
+
+document.addEventListener('input',e=>{
+  if(e.target.classList&&e.target.classList.contains('nameIn')){S.name=e.target.value;save();
+    const cn=document.getElementById('certName'); if(cn) cn.innerHTML=esc(S.name)||'&nbsp;';}
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-jump]')){document.getElementById('subcard')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const qel=b.closest('.q'); if(!qel) return; const id=qel.dataset.id; const q=ALL.find(x=>x.id===id); const s=st(id);
+  const act=b.dataset.act;
+  if(act==='hint'){s.hint=!s.hint;}
+  else if(act==='reveal'){s.done=true;s.how='revealed';s.at=Date.now();}
+  else if(act==='check'){ check(q,s,document.getElementById('in-'+id).value); }
+  else if(act==='pick'){ const i=+b.dataset.i; s.pick=s.pick||[]; if(!s.pick.includes(i))s.pick.push(i);
+    if(i===q.a) win(s); else {s.tries++;s.msg=s.tries>=2?'Not that one either. Try the hint, or tap “Show me how.”':'Not quite. Try another one!';} }
+  save(); rerenderQ(id);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id&&e.target.id.startsWith('in-')){
+    const id=e.target.id.slice(3); const q=ALL.find(x=>x.id===id); const s=st(id);
+    check(q,s,e.target.value); save(); rerenderQ(id);
+  }
+});
+function check(q,s,raw){
+  const v=parseFloat(String(raw).replace(/,/g,'').replace(/[^\d.\-]/g,' ').trim().split(/\s+/)[0]);
+  if(!isFinite(v)){s.msg='Type a number. The unit is already there for you.';return;}
+  const tol=Math.max(Math.abs(q.a)*0.01,q.tol||0);
+  if(Math.abs(v-q.a)<=tol){win(s);s.val=raw;}
+  else{s.tries++; s.msg = s.tries>=2?`${fmt(v)} isn’t it. Try the hint, or tap “Show me how.”`:`${fmt(v)} isn’t quite right. Give it another try!`;}
+}
+setInterval(()=>document.querySelectorAll('.clock').forEach(c=>c.textContent=stampTime()),30000);
+
+function renderFoot(){
+  const f=document.getElementById('footCtl');
+  f.innerHTML=`<button id="rst">Start over</button>`;
+  rst.onclick=()=>{f.innerHTML=`<span class="confirm">Erase all your answers? <button id="rY">Yes, erase</button><button id="rN">Cancel</button></span>`;
+    rY.onclick=()=>{S={q:{},tab:'basics',name:''};save();render();scrollTo(0,0);}; rN.onclick=renderFoot;};
+}
+
+function initModel(id){ ({basics:initBasics,ohms:initOhms,series:initSP,power:initPower}[id]||(()=>{}))(); }
+function segBtns(el,items,cur,on){
+  el.innerHTML=items.map(([v,l])=>`<button type="button" class="segb" aria-pressed="${v===cur}" data-v="${v}">${l}</button>`).join('');
+  el.onclick=e=>{const b=e.target.closest('.segb'); if(!b) return; on(b.dataset.v);};
+}
+function bulb(cx,cy,glow,label){
+  const g=Math.max(0,Math.min(1,glow));
+  return `${g>0?`<circle cx="${cx}" cy="${cy}" r="${16+g*22}" fill="var(--mark)" opacity="${0.15+g*0.35}"/>`:''}
+    <circle cx="${cx}" cy="${cy}" r="15" fill="${g>0?`color-mix(in srgb,var(--mark) ${Math.round(30+g*70)}%,var(--paper))`:'var(--soft)'}" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M${cx-6} ${cy+4} q3 -10 6 0 q3 10 6 0" fill="none" stroke="var(--ink)" stroke-width="1.6"/>
+    <rect x="${cx-7}" y="${cy+14}" width="14" height="8" rx="2" fill="var(--muted)"/>
+    ${label?`<text x="${cx}" y="${cy-24-g*14}" text-anchor="middle" style="font-size:11px">${label}</text>`:''}`;
+}
+function batt(x,y,v){return `<line x1="${x-16}" y1="${y-6}" x2="${x+16}" y2="${y-6}" stroke="var(--ink)" stroke-width="3"/>
+  <line x1="${x-8}" y1="${y+4}" x2="${x+8}" y2="${y+4}" stroke="var(--ink)" stroke-width="6"/>
+  <text x="${x+24}" y="${y+4}" style="font-weight:600">${v}</text><text x="${x-28}" y="${y-2}">+</text>`;}
+
+function initBasics(){
+  const svg=document.getElementById('basicSvg'), btns=document.getElementById('matBtns'), out=document.getElementById('basicOut');
+  const M={copper:['Copper wire',true,'var(--u1)'],clip:['Paper clip',true,'var(--muted)'],rubber:['Rubber eraser',false,'#E58FA5'],wood:['Wooden stick',false,'#B07A45'],none:['Nothing (gap)',false,null]};
+  let cur='none';
+  function draw(){
+    const [name,cond,col]=M[cur];
+    svg.innerHTML=`
+      <path d="M60 40 H170 M230 40 H320 V170 H60 V122 M60 98 V40" fill="none" stroke="var(--ink)" stroke-width="3"/>
+      ${batt(60,110,'battery')}
+      ${col?`<rect x="168" y="33" width="64" height="14" rx="4" fill="${col}" stroke="var(--ink)" stroke-width="1.5"/>`:''}
+      <text x="200" y="22" text-anchor="middle" style="font-weight:600">${cur==='none'?'gap':name.toLowerCase()}</text>
+      ${bulb(320,105,cond?1:0)}
+      ${cond?`<g fill="var(--u1)">${[[110,40],[280,40],[320,150],[200,170],[90,170]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4"/>`).join('')}</g>`:''}
+      <text x="190" y="196" text-anchor="middle" style="fill:var(--muted)">${cond?'Closed circuit: current flows':'Open circuit: no current'}</text>`;
+    out.innerHTML=`<span>In the gap <b>${name}</b></span><span><b>${cur==='none'?'Nothing there':cond?'Conductor':'Insulator'}</b></span><span>Bulb <b>${cond?'ON':'OFF'}</b></span>`;
+    segBtns(btns,Object.entries(M).map(([k,v])=>[k,v[0]]),cur,v=>{cur=v;draw();});
+  }
+  draw();
+}
+function initOhms(){
+  const svg=document.getElementById('ohmSvg'), V=document.getElementById('oV'), R=document.getElementById('oR'), out=document.getElementById('ohmOut');
+  function draw(){
+    const v=+V.value, r=+R.value, i=v/r, glow=Math.min(1,i/6);
+    svg.innerHTML=`
+      <path d="M60 40 H130 M230 40 H310 V160 H60 V122 M60 98 V40" fill="none" stroke="var(--ink)" stroke-width="3"/>
+      ${batt(60,110,v+' V')}
+      <path d="M130 40 l8 -12 l16 24 l16 -24 l16 24 l16 -24 l16 24 l8 -12" fill="none" stroke="var(--u2)" stroke-width="${2+r*0.35}"/>
+      <text x="180" y="18" text-anchor="middle" style="fill:var(--u2);font-weight:600">${r} Ω</text>
+      ${bulb(310,100,glow)}
+      <text x="190" y="190" text-anchor="middle" style="fill:var(--muted)">${v} V ÷ ${r} Ω = ${+i.toFixed(2)} A</text>`;
+    out.innerHTML=`<span>Voltage <b>${v} V</b></span><span>Resistance <b>${r} Ω</b></span><span>Current <b>${+i.toFixed(2)} A</b></span><span><b>${i>=4?'Very bright':i>=1.5?'Bright':i>=0.5?'Dim':'Barely glowing'}</b></span>`;
+  }
+  V.oninput=draw; R.oninput=draw; draw();
+}
+function initSP(){
+  const svg=document.getElementById('spSvg'), N=document.getElementById('spN'), modeEl=document.getElementById('spMode'), brEl=document.getElementById('spBreak'), out=document.getElementById('spOut');
+  let mode='series', broken=false;
+  function draw(){
+    const n=+N.value, xs=n===1?[200]:n===2?[160,250]:[130,205,280];
+    let s='', glow, lit;
+    if(mode==='series'){
+      lit=!broken; glow=lit?1/(n*n):0;
+      s+=`<path d="M60 40 H330 V170 H60 V122 M60 98 V40" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+      xs.forEach((x,k)=>{const b=broken&&k===0; s+= b?`<rect x="${x-18}" y="22" width="36" height="36" fill="var(--paper)"/><text x="${x}" y="45" text-anchor="middle" style="fill:var(--bad);font-weight:700">✕</text>`:`<rect x="${x-18}" y="25" width="36" height="30" fill="var(--paper)"/>${bulb(x,40,glow,'')}`;});
+    }else{
+      const last=xs[xs.length-1]; s+=`<path d="M60 40 H${last} M60 170 H${last} M60 40 V98 M60 122 V170" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+      xs.forEach((x,k)=>{const b=broken&&k===0;
+        s+=`<line x1="${x}" y1="40" x2="${x}" y2="${b?78:90}" stroke="var(--ink)" stroke-width="3"/><line x1="${x}" y1="${b?130:120}" x2="${x}" y2="170" stroke="var(--ink)" stroke-width="3"/>`;
+        s+= b?`<text x="${x}" y="110" text-anchor="middle" style="fill:var(--bad);font-weight:700">✕</text>`:bulb(x,105,1,'');});
+      lit=true; glow=1;
+    }
+    s=`${s}${batt(60,110,'6 V')}<text x="200" y="198" text-anchor="middle" style="fill:var(--muted)">${mode==='series'?'Series: one path':'Parallel: '+n+' branches'}</text>`;
+    svg.innerHTML=s;
+    const working=broken?n-1:n;
+    const msg=mode==='series'?(broken?'One bulb broke, so ALL bulbs are off':n===1?'Full brightness':`Each bulb is dimmer (shares the voltage with ${n-1} other${n>2?'s':''})`)
+      :(broken?(working?`The other ${working} bulb${working>1?'s stay':' stays'} on`:'No bulbs left'):'Every bulb at full brightness');
+    out.innerHTML=`<span>Wiring <b>${mode==='series'?'Series':'Parallel'}</b></span><span>Bulbs <b>${n}</b></span><span><b>${msg}</b></span>`;
+    segBtns(modeEl,[['series','Series'],['parallel','Parallel']],mode,v=>{mode=v;draw();});
+    segBtns(brEl,[['ok','All bulbs working'],['broken','Break bulb 1']],broken?'broken':'ok',v=>{broken=v==='broken';draw();});
+  }
+  N.oninput=draw; draw();
+}
+function initPower(){
+  const svg=document.getElementById('powSvg'), btns=document.getElementById('appBtns'), H=document.getElementById('pH'), out=document.getElementById('powOut');
+  const A={led:['LED bulb',9],laptop:['Laptop',60],tv:['TV',100],console:['Game console',200],microwave:['Microwave',1000],dryer:['Hair dryer',1500]};
+  let cur='tv';
+  function draw(){
+    const [name,w]=A[cur], h=+H.value, kwh=w/1000*h, day=kwh*0.15, month=day*30;
+    const maxW=1500, bw=Math.max(4,w/maxW*300);
+    svg.innerHTML=`
+      <text x="10" y="24" style="font-weight:600">Power</text>
+      <rect x="80" y="12" width="300" height="18" rx="9" fill="var(--soft)"/><rect x="80" y="12" width="${bw}" height="18" rx="9" fill="var(--u4)"/>
+      <text x="${Math.min(300,80+bw+6)}" y="26" style="font-weight:600">${w} W</text>
+      <text x="10" y="70" style="font-weight:600">Energy per day</text><text x="370" y="70" text-anchor="end" style="font-weight:600;fill:var(--u4)">${+kwh.toFixed(3)} kWh</text>
+      <text x="10" y="100" style="font-weight:600">Cost per day</text><text x="370" y="100" text-anchor="end" style="font-weight:600;fill:var(--u4)">$${day.toFixed(2)}</text>
+      <text x="10" y="130" style="font-weight:600">Cost per month</text><text x="370" y="130" text-anchor="end" style="font-weight:600;fill:var(--u4)">$${month.toFixed(2)}</text>`;
+    out.innerHTML=`<span><b>${name}</b> at ${w} W</span><span>${w} ÷ 1000 × ${h} h = <b>${+kwh.toFixed(3)} kWh</b></span><span>Current at 120 V <b>${+(w/120).toFixed(2)} A</b></span>`;
+    segBtns(btns,Object.entries(A).map(([k,v])=>[k,v[0]]),cur,v=>{cur=v;draw();});
+  }
+  H.oninput=draw; draw();
+}
+
+render();
+</script>
+</body>
+</html>

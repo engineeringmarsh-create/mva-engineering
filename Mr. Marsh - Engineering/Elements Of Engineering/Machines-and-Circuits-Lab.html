@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Machines &amp; Circuits Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: friendly workbook on graph paper; color-coded unit tabs, then notes, a hands-on model, practice problems, and a screenshot card at the end. */
+:root{
+  --bg:#EEF3F6; --paper:#FFFFFF; --grid:rgba(30,90,140,.07);
+  --ink:#1A2733; --muted:#5A6A78; --line:#D3DDE5; --soft:#F4F7FA;
+  --mark:#F4B92A; --good:#1E8A4F; --good-soft:#DFF3E7; --bad:#C2412D; --bad-soft:#FBE4DF; --hint-soft:#E6F0FB;
+  --u-lev:#E2661E; --u-pul:#0E8C88; --u-gear:#7A4FD0; --u-elec:#1F6FD6; --u-sum:#1A2733;
+  --u:var(--u-lev);
+  --f-display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111920; --paper:#18222B; --grid:rgba(120,180,230,.05);
+  --ink:#E6EDF2; --muted:#9AABB8; --line:#2E3C48; --soft:#1F2B35;
+  --mark:#F4B92A; --good:#5DCB8E; --good-soft:#163222; --bad:#F08670; --bad-soft:#3B1E18; --hint-soft:#182B40;
+  --u-lev:#F58A47; --u-pul:#3BC2BC; --u-gear:#A685F0; --u-elec:#5EA0F2; --u-sum:#E6EDF2; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#111920; --paper:#18222B; --grid:rgba(120,180,230,.05);
+  --ink:#E6EDF2; --muted:#9AABB8; --line:#2E3C48; --soft:#1F2B35;
+  --mark:#F4B92A; --good:#5DCB8E; --good-soft:#163222; --bad:#F08670; --bad-soft:#3B1E18; --hint-soft:#182B40;
+  --u-lev:#F58A47; --u-pul:#3BC2BC; --u-gear:#A685F0; --u-elec:#5EA0F2; --u-sum:#E6EDF2; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2.3rem,7vw,3.4rem);font-weight:800}
+h2{font-size:clamp(1.7rem,5vw,2.2rem);font-weight:800}
+h3{font-size:1.35rem;font-weight:700;color:var(--u)}
+p{margin:0}
+strong{font-weight:600}
+.eyebrow{font-family:var(--f-body);font-weight:600;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:10px}
+header .sub{color:var(--muted);max-width:60ch}
+.meter{display:flex;align-items:center;gap:12px;font-weight:500;font-size:.9rem;font-variant-numeric:tabular-nums}
+.bar{flex:1;height:14px;border-radius:99px;background:var(--line);position:relative;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--mark);transition:width .5s}
+
+nav.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:640px){nav.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}nav.tabs .tab:last-child{grid-column:1/-1}}
+.tab{--u:var(--u-lev);font-family:var(--f-display);font-size:1.15rem;font-weight:700;background:var(--paper);color:var(--ink);
+  border:2px solid var(--line);border-radius:14px;padding:6px 12px 4px;min-height:56px;cursor:pointer;display:grid;grid-template-columns:auto auto;column-gap:8px;align-items:center;justify-content:center;touch-action:manipulation;line-height:1.1}
+.tab small{grid-column:2}
+.tab small{font-family:var(--f-body);font-size:.75rem;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab .dot{width:12px;height:12px;border-radius:50%;background:var(--u);flex:none}
+.tab[aria-selected="true"]{border-color:var(--u);box-shadow:0 3px 0 var(--u)}
+.tab.done small{color:var(--good)}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--u);outline-offset:2px}
+
+.sheet{background:var(--paper);border:2px solid var(--line);border-top:8px solid var(--u);border-radius:20px;padding:clamp(18px,4vw,34px);display:flex;flex-direction:column;gap:24px}
+.lesson{display:flex;flex-direction:column;gap:16px;max-width:66ch}
+.bigidea{font-size:1.15rem;line-height:1.55}
+.lesson ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.vocab{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.vocab div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:.92rem}
+.vocab b{display:block;font-family:var(--f-display);font-size:1.15rem;color:var(--u)}
+.rules{display:flex;flex-direction:column;gap:10px}
+.rule{border:2px solid var(--u);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.rule b{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.rule span{font-size:.9rem;color:var(--muted)}
+.example{border-radius:14px;background:color-mix(in srgb,var(--mark) 16%,var(--paper));padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.example .eyebrow{color:var(--ink)}
+.steps{font-family:var(--f-mono);font-size:.9rem;display:flex;flex-direction:column;gap:2px}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+.fig{border:2px dashed var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.fig svg{width:100%;height:auto;max-width:min(100%,540px);display:block;margin:0 auto}
+.fig .cap{font-size:.88rem;color:var(--muted)}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-weight:500;font-size:.9rem}
+.ctrl input[type=range]{flex:1;min-width:160px;height:32px;accent-color:var(--u)}
+@media (min-width:700px) and (max-width:1100px){.wrap{max-width:none;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px))}body{font-size:18px}}
+@media (hover:none){.choice:hover:not(:disabled){border-color:var(--line)}}
+.readout{display:flex;flex-wrap:wrap;gap:8px;font-size:.9rem;font-variant-numeric:tabular-nums}
+.readout span{background:var(--soft);border-radius:99px;padding:3px 12px}
+.readout b{color:var(--u);font-weight:600}
+.classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.classes div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:.92rem}
+.classes strong{font-family:var(--f-display);font-size:1.2rem;display:block;color:var(--u)}
+
+.setHead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-top:2px solid var(--line);padding-top:18px}
+.qs{display:flex;flex-direction:column;gap:12px}
+.q{border:2px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.q.ok{border-color:var(--good)}
+.q.rev{border-color:var(--mark)}
+.qtop{display:flex;gap:12px;align-items:flex-start}
+.qid{font-family:var(--f-display);font-weight:700;font-size:1rem;flex:none;width:2.6em;height:2.2em;border-radius:10px;background:var(--soft);color:var(--u);display:grid;place-items:center}
+.qtext{flex:1;min-width:0;padding-top:.15em}
+.pill{font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:99px;flex:none}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.rev{background:color-mix(in srgb,var(--mark) 25%,var(--paper));color:var(--ink)}
+.ans,.choices,.fb{padding-left:calc(2.6em + 12px)}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input[type=text]{font-family:var(--f-mono);font-size:1.1rem;width:8em;min-height:44px;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+.ans input[type=text]:focus{border-color:var(--u)}
+.unit{font-weight:500;color:var(--muted)}
+button.btn{min-height:44px;touch-action:manipulation;font-family:var(--f-display);font-weight:700;font-size:1.05rem;padding:6px 16px 4px;border:2px solid var(--u);border-radius:12px;background:var(--u);color:#fff;cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choice{min-height:44px;touch-action:manipulation;font-family:var(--f-body);font-size:.95rem;padding:8px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.choice:hover:not(:disabled){border-color:var(--u)}
+.choice.picked-bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.choice.picked-ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.choice:disabled{cursor:default}
+.fb{font-size:.95rem}
+.fb.bad{color:var(--bad)}
+.hint,.sol{margin-left:calc(2.6em + 12px);font-size:.95rem;padding:10px 14px;border-radius:12px}
+.hint{background:var(--hint-soft)}
+.sol{background:var(--good-soft);color:var(--ink)}
+.q.rev .sol{background:color-mix(in srgb,var(--mark) 15%,var(--paper))}
+.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.foot button{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.confirm{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.sub-card{border:3px solid var(--u);border-radius:20px;background:var(--paper);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.sub-card .sc-head{background:var(--u);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 18px}
+.sub-card .sc-head h3{color:#fff;font-size:1.45rem}
+.sub-card .sc-head span{font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.sc-body{padding:18px;display:flex;flex-direction:column;gap:14px}
+.sc-row{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:flex-end}
+.sc-field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sc-field label,.sc-field .lbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sc-field input{font-family:var(--f-display);font-size:1.5rem;font-weight:700;border:none;border-bottom:2px solid var(--ink);background:transparent;color:var(--ink);padding:2px 0;width:min(320px,80vw)}
+.sc-field input::placeholder{color:var(--muted);font-weight:600}
+.sc-field .val{font-size:1rem;font-weight:500;font-variant-numeric:tabular-nums}
+.sc-bar{display:flex;align-items:center;gap:14px}
+.sc-bar .bar{height:28px}
+.sc-bar .bar>i{background:var(--u)}
+.sc-bar .num{font-family:var(--f-display);font-size:2.2rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;min-width:3em;text-align:right}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+.chip{font-size:.82rem;font-weight:600;padding:5px 6px;border-radius:10px;border:2px solid var(--line);text-align:center;color:var(--muted)}
+.chip.ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.chip.rev{border-color:var(--mark);background:color-mix(in srgb,var(--mark) 22%,var(--paper));color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.stamp{position:absolute;right:18px;top:60px;font-family:var(--f-display);font-weight:800;font-size:1.5rem;color:var(--good);border:3px solid var(--good);border-radius:12px;padding:0 12px;transform:rotate(-6deg);background:var(--paper)}
+.cheer{font-family:var(--f-display);font-size:1.2rem;font-weight:700;color:var(--good)}
+
+.cert{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.cert .big{font-family:var(--f-display);font-size:clamp(2rem,7vw,3rem);font-weight:800;line-height:1}
+.cert .name{font-family:var(--f-display);font-size:2rem;font-weight:700;border-bottom:2px solid var(--ink);min-width:min(320px,100%);padding:0 12px}
+.sum-units{display:flex;flex-direction:column;gap:10px;width:min(100%,520px)}
+.sum-unit{display:grid;grid-template-columns:6.5em 1fr 3.5em;gap:12px;align-items:center;font-variant-numeric:tabular-nums}
+.sum-unit b{text-align:left;font-family:var(--f-display);font-size:1.2rem;color:var(--c)}
+.sum-unit .bar{height:18px}
+.sum-unit .bar>i{background:var(--c)}
+.sum-unit span{font-size:.9rem;font-weight:500;text-align:right}
+.stats{display:flex;gap:28px;flex-wrap:wrap;justify-content:center;font-variant-numeric:tabular-nums}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-family:var(--f-display);font-size:1.8rem;font-weight:800;line-height:1.1}
+.stats span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.jump{font-size:.85rem;font-weight:500;color:var(--u);background:none;border:none;text-decoration:underline;cursor:pointer;padding:0;font-family:var(--f-body)}
+svg text{font-family:var(--f-body);font-size:13px;fill:var(--ink)}
+@media (max-width:520px){.ans,.choices,.fb{padding-left:0}.hint,.sol{margin-left:0}.stamp{top:auto;bottom:14px}}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Engineering workbook · Middle school</span>
+    <h1>Machines &amp; Circuits Lab</h1>
+    <p class="sub">Find out how levers, pulleys and gears make work easier, and how electricity moves through a circuit. Read the notes, play with the model, then try the problems. You can do the units in any order.</p>
+    <div class="meter"><span id="mCount">0 / 0</span><div class="bar"><i id="mBar" style="width:0"></i></div><span id="mPct">0%</span></div>
+  </header>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <main class="sheet" id="sheet"></main>
+  <div class="foot">
+    <span>Close answers count. If you get stuck twice, you can see how to solve it. When a unit is done, screenshot its card at the bottom and turn it in on Canvas.</span>
+    <span id="footCtl"></span>
+  </div>
+</div>
+
+<script>
+const UNITS = [
+{ id:'levers', name:'Levers', color:'--u-lev', lesson:`
+  <h2>Unit 1 · Levers</h2>
+  <p class="bigidea"><strong>Big idea:</strong> A lever is a stiff bar that turns on a point. It lets you lift something heavy with a small push. The catch is that you have to push farther than the load moves.</p>
+  <div class="vocab">
+    <div><b>Fulcrum</b>The point the bar turns on, like the middle of a seesaw.</div>
+    <div><b>Effort</b>Your push or pull, measured in newtons (N).</div>
+    <div><b>Load</b>The thing you are trying to lift or move.</div>
+    <div><b>Mechanical advantage (MA)</b>How many times the lever multiplies your push.</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>MA = effort distance ÷ load distance</b><span>Distances are measured from the fulcrum. A longer handle means more help.</span></div>
+    <div class="rule"><b>Effort × effort distance = Load × load distance</b><span>When both sides are equal, the lever balances.</span></div>
+    <div class="rule"><b>Turning force (torque) = force × distance</b><span>Measured in newton-meters (N·m). That is why door handles are far from the hinges.</span></div>
+  </div>
+  <h3>Three kinds of levers</h3>
+  <div class="classes">
+    <div><strong>Class 1</strong>Fulcrum in the middle. Seesaw, crowbar, scissors.</div>
+    <div><strong>Class 2</strong>Load in the middle. Wheelbarrow, nutcracker, bottle opener.</div>
+    <div><strong>Class 3</strong>Your push in the middle. Tweezers, fishing rod, your arm. These trade strength for speed.</div>
+  </div>
+  <div class="fig">
+    <span class="eyebrow">Try it · Lift a 600 N box</span>
+    <svg id="leverSvg" viewBox="0 0 380 150" role="img" aria-label="Lever with a fulcrum you can move"></svg>
+    <div class="ctrl"><label for="fulcrum">Slide the fulcrum</label><input type="range" id="fulcrum" min="70" max="300" value="120"></div>
+    <div class="readout" id="leverOut"></div>
+    <span class="cap">Move the fulcrum closer to the box. Watch how much less you have to push.</span>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A crowbar has 2 m on your side of the fulcrum and 0.5 m on the rock's side. The rock weighs 400 N.</p>
+    <div class="steps"><span>MA = 2 ÷ 0.5 = 4</span><span>Push needed = 400 ÷ 4 = 100 N</span></div>
+  </div>`,
+  qs:[
+  {t:'mc',p:'On a seesaw, the fulcrum is in the middle. What class of lever is a seesaw?',o:['Class 1','Class 2','Class 3'],a:0,h:'Class 1 has the fulcrum in the middle.',s:'The fulcrum is in the middle, so a seesaw is a Class 1 lever.'},
+  {t:'mc',p:'On a wheelbarrow, the wheel is the fulcrum, the dirt is in the middle, and you lift the handles. What class is it?',o:['Class 1','Class 2','Class 3'],a:1,h:'What is in the middle: the fulcrum, the load, or your push?',s:'The load (dirt) is in the middle, so a wheelbarrow is a Class 2 lever.'},
+  {t:'mc',p:'You squeeze tweezers in the middle. The hinge is at one end and the tips grab at the other. What class are they?',o:['Class 1','Class 2','Class 3'],a:2,h:'Your push is in the middle.',s:'Your push (effort) is in the middle, so tweezers are a Class 3 lever.'},
+  {t:'num',p:'You push a door with 10 N of force, 0.8 m from the hinges. How much turning force (torque) is that?',a:8,u:'N·m',h:'Torque = force × distance',s:'10 × 0.8 = 8 N·m'},
+  {t:'num',p:'A lever has 3 m on the effort side and 1 m on the load side. What is its mechanical advantage?',a:3,u:'',h:'MA = effort distance ÷ load distance',s:'3 ÷ 1 = 3. The lever triples your push.'},
+  {t:'num',p:'A 400 N rock needs to be moved with a crowbar that has an MA of 8. How hard do you need to push?',a:50,u:'N',h:'Divide the load by the MA.',s:'400 ÷ 8 = 50 N'},
+  {t:'num',p:'Your little brother weighs 300 N and sits 2 m from the middle of a seesaw. You weigh 600 N. How far from the middle should you sit to balance?',a:1,u:'m',h:'300 × 2 must equal 600 × your distance.',s:'300 × 2 = 600. Then 600 ÷ 600 = 1 m. The heavier person sits closer.'},
+  {t:'num',p:'A wheelbarrow holds 600 N of dirt 0.5 m from the wheel. The handles are 1.5 m from the wheel. How hard do you lift?',a:200,u:'N',h:'Find the MA first: 1.5 ÷ 0.5.',s:'MA = 1.5 ÷ 0.5 = 3. Then 600 ÷ 3 = 200 N.'},
+  {t:'num',p:'A lever has an MA of 4. If you push with 25 N, what is the heaviest load you can lift?',a:100,u:'N',h:'The lever multiplies your push by the MA.',s:'25 × 4 = 100 N'},
+  {t:'mc',p:'Which lever gives you the MOST help?',o:['Effort side 2 m, load side 1 m','Effort side 3 m, load side 0.5 m','Effort side 1 m, load side 1 m'],a:1,h:'Work out the MA for each one.',s:'The MAs are 2, 6 and 1. The 3 m and 0.5 m lever has MA = 6, the biggest.'},
+  ]},
+{ id:'pulleys', name:'Pulleys', color:'--u-pul', lesson:`
+  <h2>Unit 2 · Pulleys</h2>
+  <p class="bigidea"><strong>Big idea:</strong> A pulley is a wheel with a rope around it. The more rope sections that hold up a load, the less force you need. The trade is that you pull more rope.</p>
+  <div class="vocab">
+    <div><b>Fixed pulley</b>Stays in one place, like the top of a flagpole. It only changes direction.</div>
+    <div><b>Movable pulley</b>Moves up with the load. It cuts the force in half.</div>
+    <div><b>Block and tackle</b>Several pulleys working together. Cranes use these.</div>
+    <div><b>Work</b>Force × distance, measured in joules (J).</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>MA = number of ropes holding up the load</b><span>Count only the rope sections attached to the moving part.</span></div>
+    <div class="rule"><b>Pull force = load ÷ MA</b><span>4 ropes means you pull with 1/4 of the weight.</span></div>
+    <div class="rule"><b>Rope you pull = MA × how high the load goes</b><span>4 ropes means 4 m of rope for every 1 m of lift.</span></div>
+    <div class="rule"><b>Power = work ÷ time</b><span>Measured in watts (W). Faster lifting takes more power.</span></div>
+  </div>
+  <div class="fig">
+    <span class="eyebrow">Look closely · Count the ropes</span>
+    <svg viewBox="0 0 260 260" role="img" aria-label="Pulley system with two ropes holding up the load">
+      <line x1="40" y1="18" x2="220" y2="18" stroke="var(--ink)" stroke-width="3"/>
+      <g stroke="var(--muted)" stroke-width="1.2">${[50,70,90,110,130,150,170,190,210].map(x=>`<line x1="${x}" y1="18" x2="${x-10}" y2="8"/>`).join('')}</g>
+      <line x1="160" y1="18" x2="160" y2="40" stroke="var(--ink)" stroke-width="3"/>
+      <circle cx="160" cy="60" r="20" fill="var(--soft)" stroke="var(--ink)" stroke-width="2.5"/><circle cx="160" cy="60" r="3" fill="var(--ink)"/>
+      <line x1="100" y1="18" x2="100" y2="170" stroke="var(--u-pul)" stroke-width="4"/>
+      <line x1="140" y1="60" x2="140" y2="170" stroke="var(--u-pul)" stroke-width="4"/>
+      <path d="M140 60 A20 20 0 0 1 180 60" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+      <line x1="180" y1="60" x2="180" y2="225" stroke="var(--ink)" stroke-width="2.5"/>
+      <path d="M180 228 l-6 -12 h12z" fill="var(--ink)"/>
+      <text x="188" y="218">you pull</text>
+      <circle cx="120" cy="170" r="20" fill="var(--soft)" stroke="var(--ink)" stroke-width="2.5"/><circle cx="120" cy="170" r="3" fill="var(--ink)"/>
+      <path d="M100 170 A20 20 0 0 0 140 170" fill="none" stroke="var(--u-pul)" stroke-width="4"/>
+      <line x1="120" y1="190" x2="120" y2="205" stroke="var(--ink)" stroke-width="2.5"/>
+      <rect x="86" y="205" width="68" height="40" rx="6" fill="color-mix(in srgb,var(--mark) 35%,var(--paper))" stroke="var(--ink)" stroke-width="2"/>
+      <text x="103" y="230">LOAD</text>
+      <text x="22" y="100" style="fill:var(--u-pul);font-weight:600">rope 1</text>
+      <text x="146" y="130" style="fill:var(--u-pul);font-weight:600">rope 2</text>
+    </svg>
+    <span class="cap">Two colored ropes hold up the moving pulley, so MA = 2. The rope you pull doesn't count, because it only changes direction.</span>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A pulley system has 3 ropes holding a 600 N box. You lift it 2 m.</p>
+    <div class="steps"><span>Pull force = 600 ÷ 3 = 200 N</span><span>Rope pulled = 3 × 2 = 6 m</span></div>
+  </div>`,
+  qs:[
+  {t:'mc',p:'A flagpole has one fixed pulley at the top. What does it do for you?',o:['Cuts the force in half','Lets you pull down to raise the flag up','Makes the flag weigh less'],a:1,h:'A fixed pulley has MA = 1.',s:'A fixed pulley only changes the direction. Pulling down is easier than climbing up!'},
+  {t:'num',p:'A movable pulley lifts a 400 N box. How much force do you need to pull with?',a:200,u:'N',h:'A movable pulley has 2 ropes holding the load.',s:'400 ÷ 2 = 200 N'},
+  {t:'num',p:'A pulley system has 3 rope sections holding up the load. What is its mechanical advantage?',a:3,u:'',h:'MA = number of ropes holding the load.',s:'3 ropes means MA = 3.'},
+  {t:'num',p:'Movers use a block and tackle with 4 ropes to lift an 800 N piano. How hard do they pull?',a:200,u:'N',h:'Pull force = load ÷ MA',s:'800 ÷ 4 = 200 N'},
+  {t:'num',p:'With that 4-rope system, how much rope do the movers pull to raise the piano 2 m?',a:8,u:'m',h:'Rope pulled = MA × height.',s:'4 × 2 = 8 m of rope'},
+  {t:'num',p:'You can pull with 250 N. You need to lift a 1000 N crate. How many ropes need to hold the load?',a:4,u:'ropes',h:'How many times does 250 go into 1000?',s:'1000 ÷ 250 = 4 ropes'},
+  {t:'num',p:'You pull a rope with 50 N of force for 6 m. How much work did you do?',a:300,u:'J',h:'Work = force × distance',s:'50 × 6 = 300 J'},
+  {t:'mc',p:'Pulleys let you use less force. What is the trade-off?',o:['The load gets heavier','You have to pull more rope','The load moves faster'],a:1,h:'Think about the rope rule.',s:'You pull more rope. With 4 ropes, you pull 4 m to lift the load 1 m.'},
+  {t:'num',p:'A crane does 1500 J of work lifting a beam in 5 seconds. How much power is that?',a:300,u:'W',h:'Power = work ÷ time',s:'1500 ÷ 5 = 300 W'},
+  ]},
+{ id:'gears', name:'Gears', color:'--u-gear', lesson:`
+  <h2>Unit 3 · Gears</h2>
+  <p class="bigidea"><strong>Big idea:</strong> Gears are wheels with teeth that push each other around. By picking gear sizes, engineers choose between <em>fast</em> and <em>strong</em>.</p>
+  <div class="vocab">
+    <div><b>Driver gear</b>The gear that gets turned first, by a motor or your pedals.</div>
+    <div><b>Driven gear</b>The gear that the driver turns.</div>
+    <div><b>Gear ratio</b>How many times the driver turns for each turn of the driven gear.</div>
+    <div><b>RPM</b>Rotations per minute. How fast something spins.</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>Gear ratio = driven teeth ÷ driver teeth</b><span>A 10-tooth gear turning a 30-tooth gear has a ratio of 3 (written 3:1).</span></div>
+    <div class="rule"><b>Driven speed = driver speed ÷ gear ratio</b><span>Small gear turning a big gear: slower.</span></div>
+    <div class="rule"><b>Driven strength = driver strength × gear ratio</b><span>Small gear turning a big gear: stronger. You can't get both fast and strong.</span></div>
+  </div>
+  <ul>
+    <li>Two gears that touch spin in <strong>opposite directions</strong>.</li>
+    <li>A bike chain connects gears without flipping the direction.</li>
+  </ul>
+  <div class="fig">
+    <span class="eyebrow">Try it · Driver has 12 teeth and spins at 60 RPM</span>
+    <svg id="gearSvg" viewBox="0 0 380 210" role="img" aria-label="Two gears turning together"></svg>
+    <div class="ctrl"><label for="gTeeth">Teeth on the driven gear</label><input type="range" id="gTeeth" min="8" max="36" step="2" value="24"></div>
+    <div class="readout" id="gearOut"></div>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A 20-tooth motor gear spins at 600 RPM and turns a 60-tooth gear.</p>
+    <div class="steps"><span>Gear ratio = 60 ÷ 20 = 3</span><span>Big gear speed = 600 ÷ 3 = 200 RPM (slower but 3× stronger)</span></div>
+  </div>`,
+  qs:[
+  {t:'num',p:'A 10-tooth driver gear turns a 30-tooth gear. What is the gear ratio? (Type the number before “:1”.)',a:3,u:': 1',h:'Driven teeth ÷ driver teeth.',s:'30 ÷ 10 = 3, so the ratio is 3:1.'},
+  {t:'num',p:'In that 3:1 pair, the small gear spins at 90 RPM. How fast does the big gear spin?',a:30,u:'RPM',h:'Divide the speed by the gear ratio.',s:'90 ÷ 3 = 30 RPM'},
+  {t:'mc',p:'A small gear turns a big gear. Compared with the small gear, the big gear turns…',o:['Faster and weaker','Slower and stronger','The same speed'],a:1,h:'Small turning big means a ratio bigger than 1.',s:'Slower and stronger. That is how a low bike gear helps you climb hills.'},
+  {t:'mc',p:'The driver gear turns clockwise. Which way does the gear it touches turn?',o:['Clockwise','Counterclockwise','It doesn’t move'],a:1,h:'Touching gears push each other the opposite way.',s:'Counterclockwise. Meshing gears always spin in opposite directions.'},
+  {t:'mc',p:'Three gears are in a row: A touches B, and B touches C. If A turns clockwise, which way does C turn?',o:['Clockwise','Counterclockwise'],a:0,h:'Flip the direction once for each gear you go across.',s:'A clockwise → B counterclockwise → C clockwise.'},
+  {t:'num',p:'A 40-tooth driver gear spins at 20 RPM and turns a 10-tooth gear. How fast does the small gear spin?',a:80,u:'RPM',h:'Here the big gear turns the small one, so the small one goes faster: 40 ÷ 10 = 4 times faster.',s:'40 ÷ 10 = 4 times faster → 20 × 4 = 80 RPM'},
+  {t:'num',p:'A bike has 45 teeth on the front gear and 15 on the back gear. For one turn of the pedals, how many times does the back wheel turn?',a:3,u:'turns',h:'How many 15s fit into 45?',s:'45 ÷ 15 = 3 turns of the wheel for every pedal turn.'},
+  {t:'num',p:'On that same bike, you pedal at 60 RPM. How fast does the back wheel spin?',a:180,u:'RPM',h:'The wheel turns 3 times for each pedal turn.',s:'60 × 3 = 180 RPM'},
+  {t:'num',p:'A 12-tooth motor gear makes 4 N·m of turning force. It turns a 36-tooth gear. How much turning force does the big gear have?',a:12,u:'N·m',h:'Find the gear ratio, then multiply.',s:'Ratio = 36 ÷ 12 = 3 → 4 × 3 = 12 N·m'},
+  {t:'num',p:'You want the driven gear to spin 3 times slower than a 20-tooth driver. How many teeth does the driven gear need?',a:60,u:'teeth',h:'You need a gear ratio of 3.',s:'20 × 3 = 60 teeth'},
+  ]},
+{ id:'circuits', name:'Circuits', color:'--u-elec', lesson:`
+  <h2>Unit 4 · Circuits</h2>
+  <p class="bigidea"><strong>Big idea:</strong> Electricity flows in a loop called a circuit. Picture water in pipes. The battery is a pump, the current is the water flowing, and resistance is a narrow pipe that slows the flow.</p>
+  <div class="vocab">
+    <div><b>Voltage (V)</b>The push from the battery, in volts. Like water pressure.</div>
+    <div><b>Current (I)</b>How much electricity flows, in amps (A). Like how much water flows.</div>
+    <div><b>Resistance (R)</b>How hard it is for current to flow, in ohms (Ω). Like a skinny pipe.</div>
+    <div><b>Power (P)</b>How fast energy is used, in watts (W).</div>
+  </div>
+  <h3>The rules</h3>
+  <div class="rules">
+    <div class="rule"><b>Ohm's law: Volts = Amps × Ohms</b><span>Also: Amps = Volts ÷ Ohms, and Ohms = Volts ÷ Amps.</span></div>
+    <div class="rule"><b>Series (one path): add the resistances</b><span>2 Ω + 3 Ω = 5 Ω. If one bulb breaks, they all go out.</span></div>
+    <div class="rule"><b>Parallel (separate paths): total gets smaller</b><span>Two equal resistors in parallel = half of one. If one bulb breaks, the others stay on.</span></div>
+    <div class="rule"><b>Watts = Volts × Amps</b><span>A 120 V lamp using 1 A uses 120 W.</span></div>
+  </div>
+  <p>Small currents use milliamps: <code>1000 mA = 1 A</code>, so <code>20 mA = 0.02 A</code>.</p>
+  <div class="fig">
+    <span class="eyebrow">Look closely · A simple circuit</span>
+    <svg viewBox="0 0 360 190" role="img" aria-label="A 9 volt battery connected to a 3 ohm resistor">
+      <path d="M60 40 H130 M230 40 H300 V150 H60 V110 M60 80 V40" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+      <path d="M130 40 l8 -12 l16 24 l16 -24 l16 24 l16 -24 l16 24 l8 -12" fill="none" stroke="var(--u-elec)" stroke-width="3"/>
+      <text x="150" y="20" style="fill:var(--u-elec);font-weight:600">resistor 3 Ω</text>
+      <line x1="40" y1="80" x2="80" y2="80" stroke="var(--ink)" stroke-width="3"/>
+      <line x1="50" y1="92" x2="70" y2="92" stroke="var(--ink)" stroke-width="5"/>
+      <line x1="40" y1="104" x2="80" y2="104" stroke="var(--ink)" stroke-width="3"/>
+      <line x1="50" y1="110" x2="70" y2="110" stroke="var(--ink)" stroke-width="5"/>
+      <text x="88" y="98">battery 9 V</text><text x="36" y="72">+</text>
+      <path d="M294 90 h12 l-6 12z" fill="var(--mark)" stroke="var(--ink)" stroke-width="1"/>
+      <text x="312" y="100">3 A</text>
+      <text x="100" y="176" style="fill:var(--muted)">Amps = 9 V ÷ 3 Ω = 3 A</text>
+    </svg>
+  </div>
+  <div class="example"><span class="eyebrow">Example</span>
+    <p>A 12 V battery is connected to a 4 Ω resistor and a 2 Ω resistor in series.</p>
+    <div class="steps"><span>Total resistance = 4 + 2 = 6 Ω</span><span>Current = 12 ÷ 6 = 2 A</span><span>Power = 12 × 2 = 24 W</span></div>
+  </div>`,
+  qs:[
+  {t:'mc',p:'Which unit measures current (how much electricity flows)?',o:['Volts','Amps','Ohms'],a:1,h:'Check the vocabulary boxes.',s:'Current is measured in amps (A).'},
+  {t:'num',p:'A 9 V battery is connected to a 3 Ω resistor. How much current flows?',a:3,u:'A',h:'Amps = Volts ÷ Ohms',s:'9 ÷ 3 = 3 A'},
+  {t:'num',p:'2 A of current flows through a 6 Ω resistor. What is the voltage?',a:12,u:'V',h:'Volts = Amps × Ohms',s:'2 × 6 = 12 V'},
+  {t:'num',p:'A 12 V battery pushes 4 A through a light. What is the light’s resistance?',a:3,u:'Ω',h:'Ohms = Volts ÷ Amps',s:'12 ÷ 4 = 3 Ω'},
+  {t:'num',p:'Resistors of 2 Ω, 3 Ω and 5 Ω are connected in series. What is the total resistance?',a:10,u:'Ω',h:'In series, just add them up.',s:'2 + 3 + 5 = 10 Ω'},
+  {t:'num',p:'A 12 V battery is connected to a 2 Ω and a 4 Ω resistor in series. How much current flows?',a:2,u:'A',h:'Add the resistors first, then use Amps = Volts ÷ Ohms.',s:'Total = 6 Ω → 12 ÷ 6 = 2 A'},
+  {t:'mc',p:'Holiday lights are wired in SERIES (one path). One bulb burns out. What happens?',o:['Only that bulb goes out','All the bulbs go out','The other bulbs get brighter'],a:1,h:'In series there is only one path for the current.',s:'All of them go out. The broken bulb breaks the only path.'},
+  {t:'mc',p:'The lights in your house are wired in PARALLEL (separate paths). One bulb burns out. What happens?',o:['All the lights go out','The other lights stay on','The other lights get dimmer'],a:1,h:'Each bulb has its own path.',s:'The other lights stay on, because each one has its own path back to the power source.'},
+  {t:'num',p:'Two 10 Ω resistors are connected in parallel. What is the total resistance?',a:5,u:'Ω',h:'Two equal resistors in parallel = half of one.',s:'10 ÷ 2 = 5 Ω. Two paths let current flow more easily.'},
+  {t:'num',p:'A phone charger gives 5 V at 2 A. How much power is that?',a:10,u:'W',h:'Watts = Volts × Amps',s:'5 × 2 = 10 W'},
+  {t:'num',p:'A 60 W lamp plugs into a 120 V outlet. How much current does it use?',a:0.5,u:'A',h:'Amps = Watts ÷ Volts',s:'60 ÷ 120 = 0.5 A'},
+  {t:'num',p:'An LED uses 20 mA of current. How many amps is that?',a:0.02,u:'A',h:'1000 mA = 1 A, so divide by 1000.',s:'20 ÷ 1000 = 0.02 A'},
+  ]},
+];
+UNITS.forEach(u=>u.qs.forEach((q,i)=>q.id=u.name[0]+(i+1)));
+const ALL = UNITS.flatMap(u=>u.qs);
+const CHEERS=['Nice work!','You got it!','Correct!','Nailed it!','Great job!','That’s right!'];
+
+const KEY='mcl-progress-v1';
+let S={q:{},tab:'levers',name:''};
+try{const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const st=id=>S.q[id]||(S.q[id]={tries:0,done:false,how:null,hint:false,pick:[]});
+const unitDone=u=>u.qs.every(q=>S.q[q.id]&&S.q[q.id].done);
+const unitCount=u=>u.qs.filter(q=>S.q[q.id]&&S.q[q.id].done).length;
+const allDone=()=>UNITS.every(unitDone);
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Number.isInteger(n)?String(n):String(+n.toFixed(3));
+
+function setColor(){const u=UNITS.find(u=>u.id===S.tab);document.getElementById('sheet').style.setProperty('--u',`var(${u?u.color:'--u-sum'})`);}
+function renderMeter(){
+  const n=ALL.filter(q=>S.q[q.id]&&S.q[q.id].done).length, pct=Math.round(n/ALL.length*100);
+  mCount.textContent=`${n} / ${ALL.length} done`; mPct.textContent=pct+'%'; mBar.style.width=pct+'%';
+}
+function renderTabs(){
+  const tabs=document.getElementById('tabs'); tabs.innerHTML='';
+  UNITS.forEach(u=>{
+    const b=document.createElement('button'); b.className='tab'+(unitDone(u)?' done':''); b.role='tab';
+    b.style.setProperty('--u',`var(${u.color})`);
+    b.setAttribute('aria-selected',S.tab===u.id);
+    b.innerHTML=`<span class="dot"></span>${u.name}<small>${unitCount(u)}/${u.qs.length}</small>`;
+    b.onclick=()=>{S.tab=u.id;save();render();};
+    tabs.appendChild(b);
+  });
+  const c=document.createElement('button'); c.className='tab'+(allDone()?' done':''); c.role='tab';
+  c.style.setProperty('--u','var(--u-sum)');
+  c.setAttribute('aria-selected',S.tab==='cert'); c.innerHTML=`<span class="dot"></span>Summary<small>${ALL.filter(q=>S.q[q.id]?.done).length}/${ALL.length}</small>`;
+  c.onclick=()=>{S.tab='cert';save();render();}; tabs.appendChild(c);
+}
+
+function qHTML(q){
+  const s=S.q[q.id]||{}; const cls=s.done?(s.how==='correct'?'ok':'rev'):'';
+  let h=`<div class="q ${cls}" data-id="${q.id}"><div class="qtop"><span class="qid">${q.id}</span><div class="qtext">${q.p}</div>`;
+  if(s.done) h+=`<span class="pill ${cls}">${s.how==='correct'?'Got it':'Saw solution'}</span>`;
+  h+=`</div>`;
+  if(q.t==='num'){
+    h+=`<div class="ans"><input type="text" inputmode="decimal" id="in-${q.id}" aria-label="Your answer for ${q.id}" placeholder="?" ${s.done?'disabled':''} value="${s.done&&s.how==='correct'?esc(s.val??''):''}" autocomplete="off"><span class="unit">${q.u||''}</span>
+      ${s.done?'':`<button class="btn" data-act="check">Check</button><button class="btn ghost" data-act="hint">${s.hint?'Hide hint':'Hint'}</button>`}
+      ${!s.done&&s.tries>=2?`<button class="btn ghost" data-act="reveal">Show me how</button>`:''}</div>`;
+  }else{
+    h+=`<div class="choices">${q.o.map((o,i)=>{
+      let c='choice'; if((s.pick||[]).includes(i)) c+= i===q.a?' picked-ok':' picked-bad';
+      if(s.done&&i===q.a&&!c.includes('picked-ok')) c+=' picked-ok';
+      return `<button class="${c}" data-act="pick" data-i="${i}" ${s.done?'disabled':''}>${o}</button>`;}).join('')}
+      ${!s.done?`<button class="btn ghost" data-act="hint">${s.hint?'Hide hint':'Hint'}</button>`:''}
+      ${!s.done&&s.tries>=2?`<button class="btn ghost" data-act="reveal">Show me how</button>`:''}</div>`;
+  }
+  if(s.msg&&!s.done) h+=`<div class="fb bad">${s.msg}</div>`;
+  if(s.hint&&!s.done) h+=`<div class="hint"><strong>Hint:</strong> ${q.h}</div>`;
+  if(s.done) h+=`<div class="sol">${s.how==='correct'?`<strong>${s.cheer||'Nice work!'}</strong> `:'<strong>Here’s how:</strong> '}${q.s}</div>`;
+  return h+`</div>`;
+}
+
+function renderUnit(u,i){
+  const sheet=document.getElementById('sheet');
+  sheet.innerHTML=`<section class="lesson">${u.lesson}</section>
+    <div class="setHead"><h2>Practice problems</h2><span class="eyebrow"><span id="setCount">${unitCount(u)} of ${u.qs.length} done</span> · <button class="jump" data-jump>Go to my completion card</button></span></div>
+    <div class="qs">${u.qs.map(qHTML).join('')}</div>
+    ${cardHTML(u,i)}`;
+  if(u.id==='levers') initLever();
+  if(u.id==='gears') initGears();
+}
+
+const stampTime=()=>new Date().toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+function lastDone(qs){const t=qs.map(q=>S.q[q.id]?.at||0).reduce((a,b)=>Math.max(a,b),0);
+  return t?new Date(t).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';}
+function cardHTML(u,i){
+  const n=unitCount(u), tot=u.qs.length, pct=Math.round(n/tot*100);
+  const solved=u.qs.filter(q=>S.q[q.id]?.how==='correct').length, rev=u.qs.filter(q=>S.q[q.id]?.how==='revealed').length;
+  return `<section class="sub-card" id="subcard" aria-label="${u.name} completion card">
+    <div class="sc-head"><h3>Unit ${i+1}: ${u.name} · Completion card</h3><span>Machines &amp; Circuits Lab</span></div>
+    ${n===tot?'<div class="stamp">COMPLETE!</div>':''}
+    <div class="sc-body">
+      <div class="sc-row">
+        <div class="sc-field"><label for="nameIn-${u.id}">My name</label><input type="text" id="nameIn-${u.id}" class="nameIn" placeholder="Type your name" value="${esc(S.name)}" autocomplete="name"></div>
+        <div class="sc-field"><span class="lbl">Date and time</span><span class="val clock">${stampTime()}</span></div>
+        <div class="sc-field"><span class="lbl">Last problem done</span><span class="val">${lastDone(u.qs)}</span></div>
+      </div>
+      <div class="sc-bar"><div class="bar"><i style="width:${pct}%"></i></div><span class="num">${pct}%</span></div>
+      <div class="sc-row">
+        <div class="sc-field"><span class="lbl">Done</span><span class="val">${n} / ${tot}</span></div>
+        <div class="sc-field"><span class="lbl">Got it myself</span><span class="val">${solved}</span></div>
+        <div class="sc-field"><span class="lbl">Saw solution</span><span class="val">${rev}</span></div>
+      </div>
+      <div class="chips">${u.qs.map(q=>{const s=S.q[q.id]||{};const c=s.done?(s.how==='correct'?'ok':'rev'):'';
+        return `<span class="chip ${c}">${q.id} ${s.done?(s.how==='correct'?'✓':'●'):'○'}</span>`;}).join('')}</div>
+      <div class="legend"><span>✓ got it</span><span>● saw solution</span><span>○ not done yet</span></div>
+      ${n===tot?`<p class="cheer">${u.name} finished! Take a screenshot of this card and turn it in on Canvas.</p>`:`<p style="color:var(--muted);font-size:.9rem">${tot-n} to go. When this bar hits 100%, screenshot this card for Canvas.</p>`}
+    </div></section>`;
+}
+function refreshCard(){
+  const el=document.getElementById('subcard'); if(!el) return;
+  const i=UNITS.findIndex(u=>u.id===S.tab); if(i<0) return;
+  el.outerHTML=cardHTML(UNITS[i],i);
+}
+
+function renderCert(){
+  const sheet=document.getElementById('sheet');
+  const first=ALL.filter(q=>S.q[q.id]?.how==='correct'&&S.q[q.id].tries===0).length;
+  const solved=ALL.filter(q=>S.q[q.id]?.how==='correct').length;
+  const rev=ALL.filter(q=>S.q[q.id]?.how==='revealed').length;
+  const n=ALL.filter(q=>S.q[q.id]?.done).length, pct=Math.round(n/ALL.length*100), done=allDone();
+  sheet.innerHTML=`<div class="cert"><span class="eyebrow">${done?'Certificate of completion':'My progress'}</span>
+    <div class="big">Machines &amp; Circuits Lab</div>
+    <p>${done?'This certifies that':'Progress report for'}</p>
+    <div class="name" id="certName">${esc(S.name)||'&nbsp;'}</div>
+    <p>${done?`finished all ${ALL.length} problems on levers, pulleys, gears and circuits!`:`has finished ${n} of ${ALL.length} problems (${pct}%).`}</p>
+    <div class="sum-units">${UNITS.map(u=>{const c=unitCount(u),p=Math.round(c/u.qs.length*100);
+      return `<div class="sum-unit" style="--c:var(${u.color})"><b>${u.name}</b><div class="bar"><i style="width:${p}%"></i></div><span>${c}/${u.qs.length}</span></div>`;}).join('')}</div>
+    <div class="stats"><div><b>${solved}</b><span>Got it myself</span></div><div><b>${first}</b><span>First try</span></div><div><b>${rev}</b><span>Saw solution</span></div></div>
+    <p class="clock" style="color:var(--muted)">${stampTime()}</p>
+    <div class="sc-field" style="align-items:center"><label for="nameIn-cert">My name</label><input type="text" id="nameIn-cert" class="nameIn" placeholder="Type your name" value="${esc(S.name)}" autocomplete="name" style="text-align:center"></div>
+  </div>`;
+}
+
+let gearRAF=null;
+function render(){
+  if(gearRAF){cancelAnimationFrame(gearRAF);gearRAF=null;}
+  setColor(); renderMeter(); renderTabs();
+  if(S.tab==='cert') renderCert();
+  else { let i=UNITS.findIndex(u=>u.id===S.tab); if(i<0)i=0; renderUnit(UNITS[i],i); }
+  renderFoot();
+}
+function rerenderQ(id){
+  const el=document.querySelector(`.q[data-id="${id}"]`); if(!el){render();return;}
+  const q=ALL.find(x=>x.id===id); el.outerHTML=qHTML(q);
+  const u=UNITS.find(u=>u.qs.includes(q));
+  renderMeter(); renderTabs();
+  const sc=document.getElementById('setCount'); if(sc) sc.textContent=`${unitCount(u)} of ${u.qs.length} done`;
+  refreshCard();
+  const inp=document.getElementById('in-'+id); if(inp&&!inp.disabled) inp.focus();
+}
+function win(s){s.done=true;s.how='correct';s.msg='';s.at=Date.now();s.cheer=CHEERS[Math.floor(Math.random()*CHEERS.length)];}
+
+document.addEventListener('input',e=>{
+  if(e.target.classList&&e.target.classList.contains('nameIn')){S.name=e.target.value;save();
+    const cn=document.getElementById('certName'); if(cn) cn.innerHTML=esc(S.name)||'&nbsp;';}
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-jump]')){document.getElementById('subcard')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const qel=b.closest('.q'); if(!qel) return; const id=qel.dataset.id; const q=ALL.find(x=>x.id===id); const s=st(id);
+  const act=b.dataset.act;
+  if(act==='hint'){s.hint=!s.hint;}
+  else if(act==='reveal'){s.done=true;s.how='revealed';s.at=Date.now();}
+  else if(act==='check'){ check(q,s,document.getElementById('in-'+id).value); }
+  else if(act==='pick'){ const i=+b.dataset.i; s.pick=s.pick||[]; if(!s.pick.includes(i))s.pick.push(i);
+    if(i===q.a) win(s); else {s.tries++;s.msg=s.tries>=2?'Not that one either. Try the hint, or tap “Show me how.”':'Not quite. Try another one!';} }
+  save(); rerenderQ(id);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id&&e.target.id.startsWith('in-')){
+    const id=e.target.id.slice(3); const q=ALL.find(x=>x.id===id); const s=st(id);
+    check(q,s,e.target.value); save(); rerenderQ(id);
+  }
+});
+function check(q,s,raw){
+  const v=parseFloat(String(raw).replace(/,/g,'').replace(/[^\d.\-]/g,' ').trim().split(/\s+/)[0]);
+  if(!isFinite(v)){s.msg='Type a number. The unit is already there for you.';return;}
+  const tol=Math.max(Math.abs(q.a)*0.01,q.tol||0);
+  if(Math.abs(v-q.a)<=tol){win(s);s.val=raw;}
+  else{s.tries++; s.msg = s.tries>=2?`${fmt(v)} isn’t it. Try the hint, or tap “Show me how.”`:`${fmt(v)} isn’t quite right. Give it another try!`;}
+}
+setInterval(()=>document.querySelectorAll('.clock').forEach(c=>c.textContent=stampTime()),30000);
+
+function renderFoot(){
+  const f=document.getElementById('footCtl');
+  f.innerHTML=`<button id="rst">Start over</button>`;
+  rst.onclick=()=>{f.innerHTML=`<span class="confirm">Erase all your answers? <button id="rY">Yes, erase</button><button id="rN">Cancel</button></span>`;
+    rY.onclick=()=>{S={q:{},tab:'levers',name:''};save();render();scrollTo(0,0);}; rN.onclick=renderFoot;};
+}
+
+/* Lever model */
+function initLever(){
+  const svg=document.getElementById('leverSvg'), sl=document.getElementById('fulcrum'), out=document.getElementById('leverOut');
+  const L=40, E=340, Y=70, load=600;
+  function draw(){
+    const xf=+sl.value, dl=(xf-L)/100, de=(E-xf)/100, fe=load*dl/de, ma=de/dl;
+    svg.innerHTML=`
+      <line x1="10" y1="${Y+52}" x2="370" y2="${Y+52}" stroke="var(--muted)" stroke-width="1.5"/>
+      <rect x="16" y="${Y-38}" width="48" height="32" rx="5" fill="color-mix(in srgb,var(--mark) 35%,var(--paper))" stroke="var(--ink)" stroke-width="2"/>
+      <text x="22" y="${Y-17}">600 N</text>
+      <rect x="20" y="${Y-6}" width="330" height="9" rx="4" fill="var(--ink)"/>
+      <path d="M${xf} ${Y+3} l-16 49 h32z" fill="var(--u-lev)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+      <line x1="${E}" y1="${Y-50}" x2="${E}" y2="${Y-10}" stroke="var(--u-lev)" stroke-width="4"/>
+      <path d="M${E} ${Y-7} l-8 -13 h16z" fill="var(--u-lev)"/>
+      <text x="${E-48}" y="${Y-56}" style="fill:var(--u-lev);font-weight:600">push ${fe.toFixed(0)} N</text>
+      <line x1="${L}" y1="${Y+18}" x2="${xf}" y2="${Y+18}" stroke="var(--muted)" stroke-dasharray="3 3"/>
+      <line x1="${xf}" y1="${Y+30}" x2="${E}" y2="${Y+30}" stroke="var(--muted)" stroke-dasharray="3 3"/>
+      <text x="${(L+xf)/2-16}" y="${Y+14}" style="font-size:11px">load side</text>
+      <text x="${(xf+E)/2-20}" y="${Y+44}" style="font-size:11px">effort side</text>`;
+    out.innerHTML=`<span>Load side <b>${dl.toFixed(2)} m</b></span><span>Effort side <b>${de.toFixed(2)} m</b></span><span>MA <b>${ma.toFixed(1)}</b></span><span>Push needed <b>${fe.toFixed(0)} N</b></span>`;
+  }
+  sl.oninput=draw; draw();
+}
+
+/* Gear model */
+function gearPath(N,rp){
+  const m=2*rp/N, ro=rp+m, rr=rp-1.25*m, p=2*Math.PI/N; let d='';
+  for(let i=0;i<N;i++){
+    const a=i*p, pts=[[rr,a-0.5*p],[rr,a-0.28*p],[ro,a-0.14*p],[ro,a+0.14*p],[rr,a+0.28*p]];
+    pts.forEach(([r,t],k)=>{d+=(i===0&&k===0?'M':'L')+(r*Math.cos(t)).toFixed(2)+' '+(r*Math.sin(t)).toFixed(2)+' ';});
+  }
+  return d+'Z';
+}
+function initGears(){
+  const svg=document.getElementById('gearSvg'), sl=document.getElementById('gTeeth'), out=document.getElementById('gearOut');
+  const N1=12, mod=6, rpm=60; let N2, th=0, last=null;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function build(){
+    N2=+sl.value; const r1=mod*N1/2, r2=mod*N2/2, cy=105, cx1=30+r1+mod, cx2=cx1+r1+r2;
+    const sc=Math.min(1,(370)/(cx2+r2+mod+10));
+    svg.innerHTML=`<g transform="scale(${sc}) translate(0 ${(1-sc)*105/sc})">
+      <g transform="translate(${cx1} ${cy})"><g id="g1"><path d="${gearPath(N1,r1)}" fill="color-mix(in srgb,var(--u-gear) 25%,var(--paper))" stroke="var(--ink)" stroke-width="2"/><line x1="0" y1="0" x2="${r1-mod*1.6}" y2="0" stroke="var(--u-gear)" stroke-width="4"/><circle r="4" fill="var(--ink)"/></g></g>
+      <g transform="translate(${cx2} ${cy})"><g id="g2"><path d="${gearPath(N2,r2)}" fill="color-mix(in srgb,var(--mark) 30%,var(--paper))" stroke="var(--ink)" stroke-width="2"/><line x1="0" y1="0" x2="${-(r2-mod*1.6)}" y2="0" stroke="var(--ink)" stroke-width="4"/><circle r="4" fill="var(--ink)"/></g></g>
+      </g><text x="10" y="202">driver: 12 teeth</text><text x="250" y="202">driven: ${N2} teeth</text>`;
+    const gr=N2/N1;
+    out.innerHTML=`<span>Gear ratio <b>${+gr.toFixed(2)} : 1</b></span><span>Driven speed <b>${+(rpm/gr).toFixed(1)} RPM</b></span><span>Strength <b>× ${+gr.toFixed(2)}</b></span><span>${gr>1?'Slower but stronger':gr<1?'Faster but weaker':'Same speed'}</span>`;
+    pose();
+  }
+  function pose(){
+    const g1=document.getElementById('g1'), g2=document.getElementById('g2'); if(!g1) return;
+    const a1=th*180/Math.PI, a2=-a1*N1/N2 + 180/N2 + 180;
+    g1.setAttribute('transform',`rotate(${a1})`); g2.setAttribute('transform',`rotate(${a2})`);
+  }
+  function tick(t){ if(!document.getElementById('gearSvg')) return;
+    if(last!=null) th+=(t-last)/1000*(rpm/60)*2*Math.PI*0.25; last=t; pose(); gearRAF=requestAnimationFrame(tick); }
+  sl.oninput=build; build(); if(!reduce) gearRAF=requestAnimationFrame(tick);
+}
+
+render();
+</script>
+</body>
+</html>
