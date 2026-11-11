@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Basic Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Lexend:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: friendly workbook on graph paper; color-coded unit tabs, then notes, a hands-on model, practice problems, and a screenshot card at the end. */
+:root{
+  --bg:#EEF3F6; --paper:#FFFFFF; --grid:rgba(30,90,140,.07);
+  --ink:#1A2733; --muted:#5A6A78; --line:#D3DDE5; --soft:#F4F7FA;
+  --mark:#F4B92A; --good:#1E8A4F; --good-soft:#DFF3E7; --bad:#C2412D; --bad-soft:#FBE4DF; --hint-soft:#E6F0FB;
+  --u-lev:#E2661E; --u-pul:#0E8C88; --u-gear:#7A4FD0; --u-elec:#1F6FD6; --u-sum:#1A2733;
+  --u:var(--u-lev);
+  --f-display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Lexend",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111920; --paper:#18222B; --grid:rgba(120,180,230,.05);
+  --ink:#E6EDF2; --muted:#9AABB8; --line:#2E3C48; --soft:#1F2B35;
+  --mark:#F4B92A; --good:#5DCB8E; --good-soft:#163222; --bad:#F08670; --bad-soft:#3B1E18; --hint-soft:#182B40;
+  --u-lev:#F58A47; --u-pul:#3BC2BC; --u-gear:#A685F0; --u-elec:#5EA0F2; --u-sum:#E6EDF2; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#111920; --paper:#18222B; --grid:rgba(120,180,230,.05);
+  --ink:#E6EDF2; --muted:#9AABB8; --line:#2E3C48; --soft:#1F2B35;
+  --mark:#F4B92A; --good:#5DCB8E; --good-soft:#163222; --bad:#F08670; --bad-soft:#3B1E18; --hint-soft:#182B40;
+  --u-lev:#F58A47; --u-pul:#3BC2BC; --u-gear:#A685F0; --u-elec:#5EA0F2; --u-sum:#E6EDF2; color-scheme:dark;}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 64px;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.1}
+h1{font-size:clamp(2.3rem,7vw,3.4rem);font-weight:800}
+h2{font-size:clamp(1.7rem,5vw,2.2rem);font-weight:800}
+h3{font-size:1.35rem;font-weight:700;color:var(--u)}
+p{margin:0}
+strong{font-weight:600}
+.eyebrow{font-family:var(--f-body);font-weight:600;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:10px}
+header .sub{color:var(--muted);max-width:60ch}
+.meter{display:flex;align-items:center;gap:12px;font-weight:500;font-size:.9rem;font-variant-numeric:tabular-nums}
+.bar{flex:1;height:14px;border-radius:99px;background:var(--line);position:relative;overflow:hidden}
+.bar>i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--mark);transition:width .5s}
+
+nav.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:640px){nav.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}nav.tabs .tab:last-child{grid-column:1/-1}}
+.tab{--u:var(--u-lev);font-family:var(--f-display);font-size:1.15rem;font-weight:700;background:var(--paper);color:var(--ink);
+  border:2px solid var(--line);border-radius:14px;padding:6px 12px 4px;min-height:56px;cursor:pointer;display:grid;grid-template-columns:auto auto;column-gap:8px;align-items:center;justify-content:center;touch-action:manipulation;line-height:1.1}
+.tab small{grid-column:2}
+.tab small{font-family:var(--f-body);font-size:.75rem;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.tab .dot{width:12px;height:12px;border-radius:50%;background:var(--u);flex:none}
+.tab[aria-selected="true"]{border-color:var(--u);box-shadow:0 3px 0 var(--u)}
+.tab.done small{color:var(--good)}
+.tab:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--u);outline-offset:2px}
+
+.sheet{background:var(--paper);border:2px solid var(--line);border-top:8px solid var(--u);border-radius:20px;padding:clamp(18px,4vw,34px);display:flex;flex-direction:column;gap:24px}
+.lesson{display:flex;flex-direction:column;gap:16px;max-width:66ch}
+.bigidea{font-size:1.15rem;line-height:1.55}
+.lesson ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+.vocab{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.vocab div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:.92rem}
+.vocab b{display:block;font-family:var(--f-display);font-size:1.15rem;color:var(--u)}
+.rules{display:flex;flex-direction:column;gap:10px}
+.rule{border:2px solid var(--u);border-radius:14px;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.rule b{font-family:var(--f-display);font-size:1.25rem;font-weight:700}
+.rule span{font-size:.9rem;color:var(--muted)}
+.example{border-radius:14px;background:color-mix(in srgb,var(--mark) 16%,var(--paper));padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.example .eyebrow{color:var(--ink)}
+.steps{font-family:var(--f-mono);font-size:.9rem;display:flex;flex-direction:column;gap:2px}
+code,.mono{font-family:var(--f-mono);font-size:.9em}
+.fig{border:2px dashed var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.fig svg{width:100%;height:auto;max-width:min(100%,540px);display:block;margin:0 auto}
+.fig .cap{font-size:.88rem;color:var(--muted)}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-weight:500;font-size:.9rem}
+.ctrl input[type=range]{flex:1;min-width:160px;height:32px;accent-color:var(--u)}
+@media (min-width:700px) and (max-width:1100px){.wrap{max-width:none;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px))}body{font-size:18px}}
+@media (hover:none){.choice:hover:not(:disabled){border-color:var(--line)}}
+.readout{display:flex;flex-wrap:wrap;gap:8px;font-size:.9rem;font-variant-numeric:tabular-nums}
+.readout span{background:var(--soft);border-radius:99px;padding:3px 12px}
+.readout b{color:var(--u);font-weight:600}
+.classes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.classes div{background:var(--soft);border-radius:12px;padding:10px 12px;font-size:.92rem}
+.classes strong{font-family:var(--f-display);font-size:1.2rem;display:block;color:var(--u)}
+
+.setHead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;border-top:2px solid var(--line);padding-top:18px}
+.qs{display:flex;flex-direction:column;gap:12px}
+.q{border:2px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--paper)}
+.q.ok{border-color:var(--good)}
+.q.rev{border-color:var(--mark)}
+.qtop{display:flex;gap:12px;align-items:flex-start}
+.qid{font-family:var(--f-display);font-weight:700;font-size:1rem;flex:none;width:2.6em;height:2.2em;border-radius:10px;background:var(--soft);color:var(--u);display:grid;place-items:center}
+.qtext{flex:1;min-width:0;padding-top:.15em}
+.pill{font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:99px;flex:none}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.rev{background:color-mix(in srgb,var(--mark) 25%,var(--paper));color:var(--ink)}
+.ans,.choices,.fb{padding-left:calc(2.6em + 12px)}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input[type=text]{font-family:var(--f-mono);font-size:1.1rem;width:8em;min-height:44px;padding:8px 12px;border:2px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+.ans input[type=text]:focus{border-color:var(--u)}
+.unit{font-weight:500;color:var(--muted)}
+button.btn{min-height:44px;touch-action:manipulation;font-family:var(--f-display);font-weight:700;font-size:1.05rem;padding:6px 16px 4px;border:2px solid var(--u);border-radius:12px;background:var(--u);color:#fff;cursor:pointer}
+button.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choice{min-height:44px;touch-action:manipulation;font-family:var(--f-body);font-size:.95rem;padding:8px 14px;border:2px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);cursor:pointer;text-align:left}
+.choice:hover:not(:disabled){border-color:var(--u)}
+.choice.picked-bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad);text-decoration:line-through}
+.choice.picked-ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.choice:disabled{cursor:default}
+.fb{font-size:.95rem}
+.fb.bad{color:var(--bad)}
+.hint,.sol{margin-left:calc(2.6em + 12px);font-size:.95rem;padding:10px 14px;border-radius:12px}
+.hint{background:var(--hint-soft)}
+.sol{background:var(--good-soft);color:var(--ink)}
+.q.rev .sol{background:color-mix(in srgb,var(--mark) 15%,var(--paper))}
+.foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.foot button{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.confirm{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.sub-card{border:3px solid var(--u);border-radius:20px;background:var(--paper);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.sub-card .sc-head{background:var(--u);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 18px}
+.sub-card .sc-head h3{color:#fff;font-size:1.45rem}
+.sub-card .sc-head span{font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.sc-body{padding:18px;display:flex;flex-direction:column;gap:14px}
+.sc-row{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:flex-end}
+.sc-field{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sc-field label,.sc-field .lbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sc-field input{font-family:var(--f-display);font-size:1.5rem;font-weight:700;border:none;border-bottom:2px solid var(--ink);background:transparent;color:var(--ink);padding:2px 0;width:min(320px,80vw)}
+.sc-field input::placeholder{color:var(--muted);font-weight:600}
+.sc-field .val{font-size:1rem;font-weight:500;font-variant-numeric:tabular-nums}
+.sc-bar{display:flex;align-items:center;gap:14px}
+.sc-bar .bar{height:28px}
+.sc-bar .bar>i{background:var(--u)}
+.sc-bar .num{font-family:var(--f-display);font-size:2.2rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;min-width:3em;text-align:right}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+.chip{font-size:.82rem;font-weight:600;padding:5px 6px;border-radius:10px;border:2px solid var(--line);text-align:center;color:var(--muted)}
+.chip.ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.chip.rev{border-color:var(--mark);background:color-mix(in srgb,var(--mark) 22%,var(--paper));color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.stamp{position:absolute;right:18px;top:60px;font-family:var(--f-display);font-weight:800;font-size:1.5rem;color:var(--good);border:3px solid var(--good);border-radius:12px;padding:0 12px;transform:rotate(-6deg);background:var(--paper)}
+.cheer{font-family:var(--f-display);font-size:1.2rem;font-weight:700;color:var(--good)}
+
+.jump{font-size:.85rem;font-weight:500;color:var(--u);background:none;border:none;text-decoration:underline;cursor:pointer;padding:0;font-family:var(--f-body)}
+svg text{font-family:var(--f-body);font-size:13px;fill:var(--ink)}
+@media (max-width:520px){.ans,.choices,.fb{padding-left:0}.hint,.sol{margin-left:0}.stamp{top:auto;bottom:14px}}
+@media (prefers-reduced-motion:reduce){.bar>i{transition:none}}
+
+:root{--u-e:#C98A00;--u-c:#1E8A4F;--u-n:#C2412D}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--u-e:#F4B92A;--u-c:#5DCB8E;--u-n:#F08670}}
+:root[data-theme="dark"]{--u-e:#F4B92A;--u-c:#5DCB8E;--u-n:#F08670}
+nav.tabs{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+
+.wk{font-family:var(--f-display);font-weight:700;font-size:1.15rem;min-height:52px;border:2px solid var(--line);border-bottom:5px solid var(--u);background:var(--paper);color:var(--ink);border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05;touch-action:manipulation}
+.wk small{font-family:var(--f-body);font-size:.65rem;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.wk.done small{color:var(--good)}
+.wk[aria-selected="true"]{border-color:var(--u);background:color-mix(in srgb,var(--u) 16%,var(--paper))}
+.secs{display:flex;flex-wrap:wrap;gap:8px}
+.sec{display:flex;gap:6px;align-items:center;border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:99px;padding:4px 12px;font-family:var(--f-body);font-size:.82rem;font-weight:500;cursor:pointer;min-height:38px;touch-action:manipulation}
+.sec i{width:10px;height:10px;border-radius:50%;background:var(--u);flex:none}
+.sec:hover{border-color:var(--u)}
+.days{display:flex;flex-wrap:wrap;gap:8px}
+.days button{font-family:var(--f-display);font-weight:700;font-size:.95rem;border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:99px;padding:6px 14px;min-height:40px;cursor:pointer;touch-action:manipulation}
+.days button:hover{border-color:var(--u)}
+.lesson h3{border-top:2px solid var(--line);padding-top:16px;scroll-margin-top:12px}
+.qid{width:auto;min-width:2.6em;padding:0 8px}
+.daytabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.dtab{display:flex;flex-direction:column;align-items:center;border:2px solid var(--line);border-bottom:5px solid var(--u);background:var(--paper);color:var(--ink);border-radius:12px;padding:6px 2px;min-height:62px;cursor:pointer;font-family:var(--f-body);line-height:1.2;touch-action:manipulation}
+.dtab b{font-family:var(--f-display);font-size:1.05rem}.dtab span{font-size:.74rem;color:var(--muted)}.dtab small{font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.dtab.done small{color:var(--good)}.dtab[aria-selected="true"]{border-color:var(--u);background:color-mix(in srgb,var(--u) 16%,var(--paper))}
+.nextrow{display:flex;justify-content:flex-end}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:6px 0}.chk input{width:22px;height:22px;accent-color:var(--u);flex:none;margin-top:2px}
+.lbl{display:block;font-weight:600;margin:14px 0 6px}
+textarea{width:100%;font-family:var(--f-body);font-size:1rem;padding:10px;border:2px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+textarea:focus{outline:none;border-color:var(--u)}
+.fig select,.fig input[type=number]{font:inherit;min-height:44px;padding:6px 10px;border:2px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink)}
+.days button.on{border-color:var(--u);background:color-mix(in srgb,var(--u) 16%,var(--paper))}
+.secs{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.sec{justify-content:center;font-weight:600;font-size:.9rem}
+.sec[aria-selected="true"]{border-color:var(--u);background:color-mix(in srgb,var(--u) 16%,var(--paper));box-shadow:0 3px 0 var(--u)}
+.wk{padding:6px 8px;text-align:center}.wk small{font-size:.72rem;line-height:1.2;margin-top:2px}
+
+.secs{display:flex;flex-wrap:wrap;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:6px}
+.sec{flex:1 1 auto;justify-content:center;border:none;background:transparent;border-radius:12px;padding:6px 12px;min-height:42px;font-weight:600;font-size:.9rem}
+.sec:hover{background:var(--soft)}
+.sec[aria-selected="true"]{background:color-mix(in srgb,var(--u) 18%,var(--paper));box-shadow:inset 0 -4px 0 var(--u)}
+nav.tabs{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.wk{flex-direction:row;justify-content:flex-start;gap:10px;text-align:left;padding:8px 14px;min-height:58px}
+.wk .n{font-family:var(--f-display);font-size:1.35rem;color:var(--u);flex:none}
+.wk span{font-size:.85rem;font-weight:500;line-height:1.2}
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
+.crumb i{font-style:normal;opacity:.6}.crumb b{color:var(--u);font-weight:600}
+.dtab{position:relative}.dtab b{color:var(--u)}
+.wk span{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left}.wk span b{font-family:var(--f-display);font-size:1.05rem;color:var(--ink);font-weight:700;line-height:1.15}.wk{justify-content:center}
+.sub-card .stamp{position:static;transform:none;font-size:1rem;padding:0 10px;line-height:1.5}
+.code{font-family:var(--f-mono);font-size:1.35rem;font-weight:500;letter-spacing:.12em;border:2px dashed var(--u);border-radius:12px;padding:6px 14px;display:inline-block;align-self:flex-start}
+.tmr{font-variant-numeric:tabular-nums}
+.redorow{display:flex;justify-content:flex-end}
+.sub-card .sc-head{padding:6px 14px;gap:6px 12px}.sub-card .sc-head h3{font-size:1.15rem}
+.sub-card .sc-body{padding:10px 14px;gap:8px}.sub-card .sc-row{gap:6px 22px}
+.sub-card .sc-field input{font-size:1.15rem;width:min(230px,70vw)}
+.sub-card .code{font-size:1.05rem;padding:1px 10px;border-width:2px}
+.chips.mini{display:flex;flex-wrap:wrap;gap:4px}.chips.mini .chip{font-size:.7rem;padding:1px 6px;border-width:1px;border-radius:6px}
+.fbline{font-size:.82rem;color:var(--muted);line-height:1.3}.fbline b{color:var(--ink)}
+.q.mid{border-color:var(--mark)}.q.rev{border-color:var(--bad)}
+.pill.mid{background:color-mix(in srgb,var(--mark) 25%,var(--paper));color:var(--ink)}.pill.rev{background:var(--bad-soft);color:var(--bad)}
+.q.mid .sol{background:color-mix(in srgb,var(--mark) 15%,var(--paper))}.q.rev .sol{background:var(--bad-soft)}
+.chip.mid{border-color:var(--mark);background:color-mix(in srgb,var(--mark) 22%,var(--paper));color:var(--ink)}.chip.rev{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.dot{display:inline-block;width:.7em;height:.7em;border-radius:50%;margin:0 4px 0 12px;vertical-align:baseline}.dot:first-child{margin-left:0}
+.dot.ok{background:var(--good)}.dot.mid{background:var(--mark)}.dot.rev{background:var(--bad)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Engineering workbook · Grades 9–12 · 7 chapters</span>
+    <h1>Basic Engineering</h1>
+    <p class="sub">Seven chapters, like a math book. Each chapter has numbered sections (1.1, 1.2, 1.3 and so on). Every topic takes five sections: learn, math, lab, practice, and a check with a design challenge. Math is built into every topic, and the last chapter is your capstone project.</p>
+  </header>
+  <div class="secs" id="secs" role="tablist" aria-label="Chapters"></div>
+  <nav class="tabs" id="tabs" role="tablist" aria-label="Sections in this chapter"></nav>
+  <div class="crumb" id="crumb"></div>
+  <main class="sheet" id="sheet"></main>
+  <div class="foot">
+    <span>Close answers count. If you get stuck twice, you can see how to solve it. When you finish every problem in a section, answer the quick feedback question and your completion card appears. Screenshot it. At the end of each topic (five sections), put your five screenshots in one document and turn it in on Canvas.</span>
+    <span id="footCtl"></span>
+  </div>
+</div>
+
+<script>
+const T=(a,b)=>`<text x="${a}" y="${b}" font-size="12" fill="var(--ink)">`;
+const FIGS={
+found:{t:'Try it · Real size vs. 1:50 model',s:[['cm','Real length',10,300,150,1,'cm']],
+ o:v=>[['Meters',+(v.cm/100).toFixed(2)+' m'],['Inches',+(v.cm/2.54).toFixed(1)+' in'],['Model',+(v.cm/50).toFixed(1)+' cm']],
+ v:v=>`<rect x="10" y="20" width="${v.cm*1.2}" height="26" fill="var(--u)"/><rect x="10" y="62" width="${Math.max(2,v.cm*1.2/50)}" height="18" fill="var(--mark)"/>${T(10,14)}Real object</text>${T(10,98)}1:50 scale model</text>`,
+ c:'Slide the length. The model is always 50 times smaller, and units convert at the same time.'},
+math:{t:'Try it · Will it float?',s:[['m','Mass',20,600,540,10,'g'],['V','Volume',50,400,200,10,'cm³']],
+ o:v=>{const d=v.m/v.V;return [['Density',+d.toFixed(2)+' g/cm³'],['In water',d<1?'Floats':'Sinks']]},
+ v:v=>{const d=v.m/v.V,z=Math.sqrt(v.V)*3.5,y=d<1?70-z*d:110-z;return `<rect x="0" y="70" width="380" height="40" fill="var(--hint-soft)"/><rect x="160" y="${y}" width="${z}" height="${z}" fill="var(--u)"/>`},
+ c:'Water has a density of 1 g/cm³. Anything with a lower density floats.'},
+civil:{t:'Try it · Factor of safety',s:[['L','Load on the beam',10,100,30,1,'kN']],
+ o:v=>{const f=60/v.L;return [['Factor of safety',+f.toFixed(2)],['Verdict',f>=2?'Safe':f>=1?'Too close':'Fails']]},
+ v:v=>`<rect x="10" y="40" width="360" height="26" fill="var(--soft)" stroke="var(--ink)"/><rect x="10" y="40" width="${v.L*3.6}" height="26" fill="${v.L>60?'var(--bad)':'var(--u)'}"/><line x1="226" x2="226" y1="30" y2="76" stroke="var(--ink)" stroke-width="3"/>${T(226,94)}</text><text x="226" y="94" font-size="12" text-anchor="middle" fill="var(--ink)">beam limit: 60 kN</text>`,
+ c:'This beam can carry 60 kN. Raise the load and watch the safety margin shrink.'},
+mech:{t:'Try it · Gear ratio',s:[['N','Driven gear teeth',8,48,36,1,'teeth']],
+ o:v=>{const g=v.N/12;return [['Ratio',+g.toFixed(2)+' : 1'],['Output speed',+(60/g).toFixed(1)+' RPM'],['Torque','× '+(+g.toFixed(2))]]},
+ v:v=>{const r=v.N*1.1;return `<circle cx="${20+13}" cy="55" r="13" fill="var(--u)" opacity=".5" stroke="var(--ink)" stroke-width="2"/><circle cx="${46+r}" cy="55" r="${r}" fill="var(--mark)" opacity=".5" stroke="var(--ink)" stroke-width="2"/>`},
+ c:'The small driver gear has 12 teeth and spins at 60 RPM. A bigger gear turns slower but with more torque.'},
+elec:{t:'Try it · Ohm’s law LED',s:[['V','Battery',1,12,9,1,'V'],['R','Resistor',10,1000,450,10,'Ω']],
+ o:v=>{const i=v.V/v.R;return [['Current',+(i*1000).toFixed(1)+' mA'],['Power',+(v.V*i).toFixed(2)+' W'],['LED',i>0.03?'Too much current!':i<0.002?'Barely on':'Glowing']]},
+ v:v=>{const i=v.V/v.R;return `<circle cx="190" cy="55" r="34" fill="var(--u)" opacity="${Math.min(1,i/0.02).toFixed(2)}" stroke="var(--ink)" stroke-width="3"/>`},
+ c:'A small LED is happiest near 20 mA. Change V and R to find a safe setting.'},
+chem:{t:'Try it · The pH scale',s:[['pH','pH',0,14,7,1,'']],
+ o:v=>[['Type',v.pH<7?'Acid':v.pH>7?'Base':'Neutral'],['H⁺ ions',`10<sup>−${v.pH}</sup> mol/L`]],
+ v:v=>`<rect x="130" y="10" width="120" height="90" rx="10" fill="hsl(${v.pH/14*270},70%,50%)" stroke="var(--ink)" stroke-width="2"/>`,
+ c:'Each pH step changes the acidity by 10 times. Lemon juice is near 2 and bleach near 13.'},
+nuc:{t:'Try it · Half-life decay',s:[['d','Time passed',0,40,10,1,'days']],
+ o:v=>[['Half-lives',+(v.d/5).toFixed(1)],['Still radioactive',+(100*Math.pow(.5,v.d/5)).toFixed(1)+' %']],
+ v:v=>`<rect x="10" y="40" width="360" height="26" fill="var(--soft)" stroke="var(--ink)"/><rect x="10" y="40" width="${3.6*100*Math.pow(.5,v.d/5)}" height="26" fill="var(--u)"/>`,
+ c:'This isotope has a half-life of 5 days: every 5 days, half of what is left decays.'},
+truss:{t:'Try it · Two-cable sign',s:[['a','Cable angle',10,80,30,1,'°']],
+ o:v=>{const n=Math.sin(v.a*Math.PI/180);return [['sin θ',+n.toFixed(2)],['Tension in each cable',Math.round(1000/(2*n))+' N']]},
+ v:v=>{const y=10+Math.min(80,Math.tan(v.a*Math.PI/180)*140);return `<polyline points="50,10 190,${y} 330,10" fill="none" stroke="var(--u)" stroke-width="4"/><rect x="170" y="${y}" width="40" height="14" fill="var(--mark)"/>`},
+ c:'A 1000 N sign hangs from two cables. Flatter cables have to pull much harder.'},
+stress:{t:'Try it · Stress on a post',s:[['F','Force',100,5000,900,100,'N'],['A','Cross-section area',50,500,300,10,'cm²']],
+ o:v=>[['Area',+(v.A/1e4).toFixed(3)+' m²'],['Stress',Math.round(v.F/(v.A/1e4)).toLocaleString()+' Pa']],
+ v:v=>`<line x1="190" y1="8" x2="190" y2="48" stroke="var(--ink)" stroke-width="${1+v.F/800}"/><rect x="${190-v.A*.3}" y="50" width="${v.A*.6}" height="40" fill="var(--u)"/>`,
+ c:'Stress is force spread over area. A wider post lowers the stress.'},
+motion:{t:'Try it · Distance–time graph',s:[['v','Speed',1,10,3,1,'m/s'],['t','Time',1,10,6,1,'s']],
+ o:v=>[['Distance',v.v*v.t+' m'],['Slope of line',v.v+' m/s']],
+ v:v=>`<line x1="20" y1="100" x2="360" y2="100" stroke="var(--ink)"/><line x1="20" y1="10" x2="20" y2="100" stroke="var(--ink)"/><line x1="20" y1="100" x2="360" y2="${100-v.v*8}" stroke="var(--u)" stroke-width="3"/><circle cx="${20+v.t*34}" cy="${100-v.v*v.t*.8}" r="6" fill="var(--mark)" stroke="var(--ink)"/>`,
+ c:'A steeper line means a higher speed. The dot shows where you are at that time.'},
+lever:{t:'Try it · Lift a 400 N rock',s:[['a','Effort arm',0.5,4,2,0.5,'m']],
+ o:v=>{const m=v.a/0.5;return [['Mechanical advantage',+m.toFixed(1)],['Push needed',Math.round(400/m)+' N']]},
+ v:v=>`<line x1="70" y1="60" x2="${100+v.a*60}" y2="60" stroke="var(--u)" stroke-width="8"/><polygon points="100,62 90,92 110,92" fill="var(--ink)"/><rect x="58" y="36" width="24" height="24" fill="var(--mark)"/>`,
+ c:'The load arm is fixed at 0.5 m. A longer effort arm means a smaller push.'},
+rseries:{t:'Try it · Series vs. parallel',s:[['R1','Resistor 1',10,100,100,10,'Ω'],['R2','Resistor 2',10,100,100,10,'Ω']],
+ o:v=>[['Series',(v.R1+v.R2)+' Ω'],['Parallel',+(v.R1*v.R2/(v.R1+v.R2)).toFixed(1)+' Ω']],
+ v:v=>`<rect x="10" y="25" width="${(v.R1+v.R2)*1.7}" height="20" fill="var(--u)"/><rect x="10" y="68" width="${v.R1*v.R2/(v.R1+v.R2)*1.7}" height="20" fill="var(--mark)"/>${T(10,18)}Series total</text>${T(10,62)}Parallel total</text>`,
+ c:'Series resistances add. Parallel branches always give a total smaller than the smallest resistor.'},
+conc:{t:'Try it · Percent concentration',s:[['s','Salt',1,100,15,1,'g'],['w','Water',50,500,285,5,'g']],
+ o:v=>[['Solution mass',(v.s+v.w)+' g'],['Concentration',+(v.s/(v.s+v.w)*100).toFixed(1)+' %']],
+ v:v=>`<rect x="130" y="10" width="120" height="90" rx="10" fill="var(--soft)" stroke="var(--ink)" stroke-width="2"/><rect x="132" y="12" width="116" height="86" rx="8" fill="var(--u)" opacity="${Math.min(1,v.s/(v.s+v.w)*3+.1).toFixed(2)}"/>`,
+ c:'Concentration is salt mass divided by the total solution mass.'},
+shield:{t:'Try it · Radiation shielding',s:[['x','Shield thickness',0,12,6,1,'cm']],
+ o:v=>[['Half-value layers',+(v.x/2).toFixed(1)],['Radiation left',+(100*Math.pow(.5,v.x/2)).toFixed(1)+' %']],
+ v:v=>`<rect x="10" y="40" width="360" height="26" fill="var(--soft)" stroke="var(--ink)"/><rect x="10" y="40" width="${3.6*100*Math.pow(.5,v.x/2)}" height="26" fill="var(--u)"/>`,
+ c:'Every 2 cm of this material cuts the radiation in half.'}
+};
+const CONVS={Length:[['mm',.001],['cm',.01],['m',1],['km',1000],['in',.0254],['ft',.3048],['mi',1609.344]],Mass:[['mg',1e-6],['g',.001],['kg',1],['oz',.028349523],['lb',.45359237],['tonne',1000]],Time:[['ms',.001],['s',1],['min',60],['h',3600],['day',86400]],Speed:[['m/s',1],['km/h',1/3.6],['mph',.44704],['ft/s',.3048]],Volume:[['mL',1e-6],['L',.001],['gal',.003785411784],['m³',1]]};
+let CV={c:'Length',v:12,f:'m',t:'ft'};
+const nf=x=>!isFinite(x)?'—':(Math.abs(x)>=1e6||(x!==0&&Math.abs(x)<1e-3))?x.toExponential(3):String(+x.toPrecision(7));
+function CONV(){return `<div class="fig" id="conv"><span class="eyebrow">Try it · Unit converter with a scale bar</span><div class="days" id="cv-cats">${Object.keys(CONVS).map(k=>`<button data-cat="${k}">${k}</button>`).join('')}</div><div class="ctrl"><label for="cv-v">Value</label><input type="number" id="cv-v" step="any" style="width:8em"><select id="cv-f" aria-label="From unit"></select><span>→</span><select id="cv-t" aria-label="To unit"></select></div><div class="readout" id="cv-out"></div><svg viewBox="0 0 380 110" role="img" aria-label="Scale bar of units" id="cv-svg"></svg><span class="cap">Each tick marks 1 of that unit on a scale where every step right is 10 times bigger. The arrow shows your value. Notice how a bigger unit sits farther right and needs a smaller number.</span></div>`}
+function initConv(){const q=id=>document.getElementById(id);
+ const up=()=>{const us=CONVS[CV.c],g=n=>us.find(u=>u[0]===n)[1],base=CV.v*g(CV.f),k=g(CV.f)/g(CV.t);
+  q('cv-out').innerHTML=`<span>${nf(CV.v)} ${CV.f} = <b>${nf(base/g(CV.t))} ${CV.t}</b></span><span>1 ${CV.f} = <b>${nf(k)} ${CV.t}</b></span><span>Multiply by <b>${nf(k)}</b></span>`;
+  const L=us.map(u=>Math.log10(u[1])),lo=Math.min(...L)-.6,hi=Math.max(...L)+.6,X=v=>+(20+(Math.min(hi,Math.max(lo,Math.log10(Math.abs(v)||1e-12)))-lo)/(hi-lo)*340).toFixed(1);
+  q('cv-svg').innerHTML=sv(`<line x1="20" y1="60" x2="360" y2="60" stroke="var(--ink)" stroke-width="2"/>`+us.slice().sort((a,b)=>a[1]-b[1]).map((u,i)=>{const x=X(u[1]);return `<line x1="${x}" x2="${x}" y1="54" y2="66" stroke="var(--ink)"/><text x="${x}" y="${i%2?86:46}" text-anchor="middle" font-size="12">${u[0]}</text>`}).join('')+(base>0?`<polygon points="${X(base)-7},18 ${X(base)+7},18 ${X(base)},34" fill="var(--u)"/>`:'')+`<text x="20" y="106" font-size="11" fill="var(--muted)">smaller</text><text x="360" y="106" font-size="11" text-anchor="end" fill="var(--muted)">bigger</text>`);};
+ const fill=()=>{const us=CV.c&&CONVS[CV.c];if(!us.some(u=>u[0]===CV.f))CV.f=us[0][0];if(!us.some(u=>u[0]===CV.t))CV.t=us[us.length>2?2:1][0];
+  ['f','t'].forEach(k=>q('cv-'+k).innerHTML=us.map(u=>`<option${u[0]===CV[k]?' selected':''}>${u[0]}</option>`).join(''));
+  document.querySelectorAll('#cv-cats button').forEach(b=>b.classList.toggle('on',b.dataset.cat===CV.c));up();};
+ q('cv-v').value=CV.v;q('cv-v').oninput=e=>{CV.v=+e.target.value;up();};
+ q('cv-f').onchange=e=>{CV.f=e.target.value;up();};q('cv-t').onchange=e=>{CV.t=e.target.value;up();};
+ document.querySelectorAll('#cv-cats button').forEach(b=>b.onclick=()=>{CV.c=b.dataset.cat;fill();});fill();}
+const sv=h=>h.replace(/(fill|stroke)="(var\([^"]+\))"/g,'style="$1:$2"');
+function FIG(id){const f=FIGS[id];if(!f)return '';return `<div class="fig" data-fig="${id}"><span class="eyebrow">${f.t}</span><svg viewBox="0 0 380 110" role="img" aria-label="${f.t}"></svg>${f.s.map(a=>`<div class="ctrl"><label for="fg-${a[0]}">${a[1]}</label><input type="range" id="fg-${a[0]}" min="${a[2]}" max="${a[3]}" step="${a[5]}" value="${a[4]}"><b class="mono" id="fv-${a[0]}"></b></div>`).join('')}<div class="readout"></div><span class="cap">${f.c}</span></div>`}
+const SECT=[{n:'Intro',ids:[1,19],color:'--u-lev'},{n:'Civil',ids:[2,3,4],color:'--u-gear'},{n:'Mechanical',ids:[5,6,7],color:'--u-elec'},{n:'Electrical',ids:[8,9],color:'--u-e'},{n:'Chemical',ids:[10,11],color:'--u-c'},{n:'Nuclear',ids:[12,13],color:'--u-n'},{n:'Capstone',ids:[14,15,16,17,18],color:'--u-sum'}];
+const mc=(p,o,a,h,s)=>({t:'mc',p,o,a,h,s}), nm=(p,a,u,h,s)=>({t:'num',p,a,u,h,s});
+const rngF=seed=>{let a=seed>>>0;return ()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};};
+const mkR=seed=>{const g=rngF(seed);return (a,b,s=1)=>a+s*Math.floor(g()*(Math.floor((b-a)/s)+1));};
+const r2=x=>+x.toFixed(2), r3=x=>+x.toFixed(3);
+const RW=['A product design engineer improves everyday objects, like bike helmets and water bottles, by testing prototype after prototype.','A structural engineer checks that a stadium roof can carry its own weight plus a heavy snowfall.','Bridge designers use triangle trusses because triangles stay rigid under heavy traffic.','Geotechnical engineers test soil to size a building’s footings so it does not sink.','Robotics engineers graph how fast a warehouse robot moves to plan its route and battery life.','A mechanical engineer sizes a wrench handle or a crane arm using torque and leverage.','Bicycle gears and car transmissions let a small motor or small legs do big work.','An electrical engineer picks the right resistor so an LED in a phone lasts for years.','House wiring uses parallel circuits so every light still works when one is switched off.','Chemical engineers measure concentration to make safe drinking water and medicine.','Process engineers track yield so a factory wastes less raw material.','Medical physicists use lead shielding to protect patients and staff during X-rays.','Nuclear engineers use half-life to decide how long used fuel and medical isotopes must be stored.','Real engineering teams write a specification with numbers before they design anything.','Companies compare design options with a decision matrix before spending money on a prototype.','Engineers make scale drawings so parts built in different places still fit together.','Test engineers run the same test many times, because a single result can be a fluke.','Engineers present data to managers and clients to prove a design meets its requirements.','Scientists and engineers write very large and very small numbers with powers of ten, from the width of a hair to the distance to the Moon.'];
+const GENS=[
+[R=>{const k=[20,25,40,50,100][R(0,4)],L=R(2,30);return [`A real bridge span is ${L} m long. How long is a 1:${k} scale model, in centimeters?`,L*100/k,'cm','Convert meters to centimeters, then divide by the scale.',`${L} m = ${L*100} cm, and ${L*100} ÷ ${k} = ${L*100/k} cm.`]},
+ R=>{const o=R(2,9)*100,p=R(1,8)*5,n=o-o*p/100;return [`A part weighed ${o} g. After a redesign it weighs ${n} g. By what percent did the weight drop?`,p,'%','(old − new) ÷ old × 100',`${o} − ${n} = ${o-n}, and ${o-n} ÷ ${o} × 100 = ${p}%.`]},
+ R=>{const a=R(1,12)*18,v=a*5/18;return [`A cart travels at ${a} km/h. What is its speed in m/s?`,v,'m/s','Divide km/h by 3.6.',`${a} ÷ 3.6 = ${v} m/s.`]}],
+[R=>{const d=R(2,9)*10,l=R(1,5)*10,k=R(2,4),c=k*(d+l);return [`A deck has a dead load of ${d} kN and a live load of ${l} kN. Its supports can hold ${c} kN. What is the factor of safety?`,k,'','Add the loads first, then divide the capacity by the total.',`Total = ${d} + ${l} = ${d+l} kN, and FoS = ${c} ÷ ${d+l} = ${k}.`]},
+ R=>{const m=R(1,18)*50;return [`A steel beam has a mass of ${m} kg. What is its weight in newtons? (use 9.8)`,r2(m*9.8),'N','Weight = mass × 9.8.',`${m} × 9.8 = ${r2(m*9.8)} N.`]},
+ R=>{const l=R(2,12)*10,f=R(2,3);return [`A cable carries a ${l} kN load. The design needs a factor of safety of ${f}. What capacity must the cable have?`,l*f,'kN','Capacity = load × factor of safety.',`${l} × ${f} = ${l*f} kN.`]}],
+[R=>{const m=R(1,3),[a,b,c]=[[3,4,5],[5,12,13],[8,15,17],[6,8,10]][R(0,3)].map(x=>x*m);return [`A roof truss spans ${a} m horizontally and rises ${b} m. How long is the sloped rafter?`,c,'m','a² + b² = c²',`${a*a} + ${b*b} = ${c*c}, so the rafter is ${c} m.`]},
+ R=>{const o=R(2,9),k=R(2,5);return [`A ramp is ${o*k} m long and rises ${o} m. What is sin θ for the ramp angle?`,r3(1/k),'','sin θ = opposite ÷ hypotenuse.',`${o} ÷ ${o*k} = ${r3(1/k)}.`]},
+ R=>{const w=R(1,10)*200,a=[30,90][R(0,1)],t=a===30?w:w/2;return [`A ${w} N sign hangs from two cables, each ${a}° above horizontal. What is the tension in each cable? (sin 30° = 0.5, sin 90° = 1)`,t,'N','T = W ÷ (2 sin θ)',`T = ${w} ÷ (2 × ${a===30?0.5:1}) = ${t} N.`]}],
+[R=>{const f=R(1,10)*600,a=R(2,8)/100;return [`A ${f} N load pushes on a post with a cross-section of ${a} m². What is the stress?`,r2(f/a),'Pa','Stress = force ÷ area.',`${f} ÷ ${a} = ${r2(f/a)} Pa.`]},
+ R=>{const L=R(2,5),B=R(2,4),k=R(2,10),w=k*L*B*1000;return [`A footing is ${L} m by ${B} m and carries ${w} N. What pressure does it put on the soil?`,k*1000,'Pa','Pressure = force ÷ area.',`Area = ${L} × ${B} = ${L*B} m², and ${w} ÷ ${L*B} = ${k*1000} Pa.`]},
+ R=>{const r=[0.2,0.5,1,2,3][R(0,4)];return [`A round column has a radius of ${r} m. What is its cross-sectional area? (π = 3.14)`,r3(3.14*r*r),'m²','Area = πr²',`3.14 × ${r}² = ${r3(3.14*r*r)} m².`]}],
+[R=>{const v=R(2,15),t=R(2,12);return [`A cart rolls ${v*t} m in ${t} s. What is its speed?`,v,'m/s','Speed = distance ÷ time.',`${v*t} ÷ ${t} = ${v} m/s.`]},
+ R=>{const a=R(2,9),t=R(2,8);return [`A car speeds up from rest to ${a*t} m/s in ${t} s. What is its acceleration?`,a,'m/s²','Acceleration = change in speed ÷ time.',`${a*t} ÷ ${t} = ${a} m/s².`]},
+ R=>{const v=R(2,12),t=R(3,15);return [`A drone flies at ${v} m/s for ${t} s. How far does it travel?`,v*t,'m','Distance = speed × time.',`${v} × ${t} = ${v*t} m.`]}],
+[R=>{const f=R(1,10)*10,d=R(2,9)/10;return [`You push a wrench with ${f} N at ${d} m from the bolt. What torque do you apply?`,r2(f*d),'N·m','Torque = force × distance.',`${f} × ${d} = ${r2(f*d)} N·m.`]},
+ R=>{const e=R(2,6),l=[0.5,1,1.5,2][R(0,3)];return [`A lever has ${e} m on the effort side and ${l} m on the load side. What is its mechanical advantage?`,r2(e/l),'','MA = effort distance ÷ load distance.',`${e} ÷ ${l} = ${r2(e/l)}.`]},
+ R=>{const w=R(2,9)*100,m=[2,4,5,8][R(0,3)];return [`A lever with MA ${m} lifts a ${w} N load. How much effort is needed?`,r2(w/m),'N','Effort = load ÷ MA.',`${w} ÷ ${m} = ${r2(w/m)} N.`]}],
+[R=>{const d=R(2,4)*4,k=R(2,5);return [`A ${d}-tooth gear drives a ${d*k}-tooth gear. What is the gear ratio?`,k,'','Driven teeth ÷ driver teeth.',`${d*k} ÷ ${d} = ${k}.`]},
+ R=>{const p=R(1,4)*60,k=R(2,4);return [`A gear turning at ${p} RPM drives a gear with a ratio of ${k} : 1. How fast does the driven gear turn?`,p/k,'RPM','Divide the speed by the ratio.',`${p} ÷ ${k} = ${p/k} RPM.`]},
+ R=>{const i=R(2,9)*100,e=R(4,9)*10;return [`A machine takes in ${i} J of energy and does ${i*e/100} J of useful work. What is its efficiency?`,e,'%','Useful ÷ input × 100.',`${i*e/100} ÷ ${i} × 100 = ${e}%.`]}],
+[R=>{const i=R(1,8)/2,r=R(2,12)*5,v=i*r;return [`A ${v} V source is connected across a ${r} Ω resistor. What current flows?`,i,'A','I = V ÷ R.',`${v} ÷ ${r} = ${i} A.`]},
+ R=>{const i=[1,2,3,6][R(0,3)],v=R(1,8)*6;return [`A heater draws ${i} A from a ${v} V supply. What is its resistance?`,r2(v/i),'Ω','R = V ÷ I.',`${v} ÷ ${i} = ${r2(v/i)} Ω.`]},
+ R=>{const v=R(1,8)*3,i=R(1,6)/2;return [`A motor runs on ${v} V and draws ${i} A. How much power does it use?`,r2(v*i),'W','P = V × I.',`${v} × ${i} = ${r2(v*i)} W.`]}],
+[R=>{const a=R(1,9)*10,b=R(1,9)*10,c=R(1,9)*10;return [`Three resistors of ${a} Ω, ${b} Ω, and ${c} Ω are in series. What is the total resistance?`,a+b+c,'Ω','Series resistances add.',`${a} + ${b} + ${c} = ${a+b+c} Ω.`]},
+ R=>{const r=R(1,10)*20,n=R(2,4);return [`${n} identical ${r} Ω resistors are connected in parallel. What is the total resistance?`,r2(r/n),'Ω','Identical resistors in parallel: divide by the number.',`${r} ÷ ${n} = ${r2(r/n)} Ω.`]},
+ R=>{const p=R(1,10)*20,h=R(2,10);return [`A ${p} W heater runs for ${h} hours. How much energy does it use?`,p*h,'Wh','Energy = power × time.',`${p} × ${h} = ${p*h} Wh.`]}],
+[R=>{const p=R(2,10),t=R(1,5)*100,s=p*t/100;return [`A solution contains ${s} g of salt in ${t} g of solution. What is the percent concentration?`,p,'%','Solute ÷ solution × 100.',`${s} ÷ ${t} × 100 = ${p}%.`]},
+ R=>{const p=R(2,12),t=R(2,8)*100;return [`How many grams of sugar are in ${t} g of a ${p}% sugar solution?`,p*t/100,'g','Percent × total ÷ 100.',`${p} × ${t} ÷ 100 = ${p*t/100} g.`]},
+ R=>{const c=R(1,4)*10,v=R(1,3)*100,k=R(2,4);return [`You dilute ${v} mL of a ${c}% solution to ${v*k} mL. What is the new concentration?`,r2(c/k),'%','C₁V₁ = C₂V₂',`${c} × ${v} = C₂ × ${v*k}, so C₂ = ${r2(c/k)}%.`]}],
+[R=>{const a=R(2,40),b=R(2,40);return [`${a} g of A reacts completely with ${b} g of B in a sealed container. What is the total mass of the products?`,a+b,'g','Mass is conserved.',`${a} + ${b} = ${a+b} g.`]},
+ R=>{const t=R(2,10)*20,y=R(5,19)*5,a=t*y/100;return [`A reaction should make ${t} g of product but makes ${a} g. What is the percent yield?`,y,'%','Actual ÷ theoretical × 100.',`${a} ÷ ${t} × 100 = ${y}%.`]},
+ R=>{const p=R(1,5),d=R(1,4);return [`Solution A has pH ${p} and solution B has pH ${p+d}. How many times more acidic is A?`,10**d,'times','Each pH step is 10 times.',`${d} steps: 10^${d} = ${10**d}.`]}],
+[R=>{const p=R(2,30),n=R(2,40);return [`An isotope has ${p} protons and ${n} neutrons. What is its mass number?`,p+n,'','Protons + neutrons.',`${p} + ${n} = ${p+n}.`]},
+ R=>{const s=R(1,10)*40,h=R(1,3),l=R(2,4);return [`A shield has a half-value layer of ${h} cm. How much of ${s} units of radiation gets through ${h*l} cm?`,s/2**l,'units','Count the half-value layers, then halve that many times.',`${h*l} ÷ ${h} = ${l} layers, so ${s} ÷ ${2**l} = ${s/2**l}.`]},
+ R=>{const m=R(11,99)/10,e=R(2,5),v=Math.round(m*10)*10**(e-1);return [`Write ${m} × 10^${e} as a regular number.`,v,'','Move the decimal point right.',`${m} × ${10**e} = ${v}.`]}],
+[R=>{const h=R(2,10),n=R(2,4),a=R(2,10),s=a*2**n;return [`A sample has a half-life of ${h} days and starts at ${s} g. How much remains after ${h*n} days?`,a,'g','Count half-lives: time ÷ half-life.',`${h*n} ÷ ${h} = ${n} half-lives, so ${s} ÷ ${2**n} = ${a} g.`]},
+ R=>{const e=R(30,40),h=R(10,30)*100;return [`A plant turns ${h} MW of heat into ${h*e/100} MW of electricity. What is its efficiency?`,e,'%','Electrical ÷ heat × 100.',`${h*e/100} ÷ ${h} × 100 = ${e}%.`]},
+ R=>{const t=R(2,6),p=R(1,9)*100;return [`A device uses ${p*t} J of energy in ${t} s. What is its power?`,p,'W','Power = energy ÷ time.',`${p*t} ÷ ${t} = ${p} W.`]}],
+[R=>{const b=[20,25,40,50][R(0,3)],p=[40,50,60,70,80,90][R(0,5)],s=b*p/100;return [`A project has a $${b} budget and $${s} has been spent. What percent of the budget is used?`,p,'%','Spent ÷ budget × 100.',`${s} ÷ ${b} × 100 = ${p}%.`]},
+ R=>{const n=R(3,12),c=R(2,9);return [`You need ${n} brackets that cost $${c} each. What is the total cost?`,n*c,'$','Multiply.',`${n} × ${c} = $${n*c}.`]},
+ R=>{const b=R(2,10)*10,s=R(1,b/10-1)*10;return [`A $${b} budget has $${s} spent. How much is left?`,b-s,'$','Subtract.',`${b} − ${s} = $${b-s}.`]}],
+[R=>{const a=R(2,5),w=R(1,3),c=R(2,5),x=R(1,3);return [`An idea scores ${a} on strength (weight ${w}) and ${c} on cost (weight ${x}). What is its weighted score?`,a*w+c*x,'','Score × weight, then add.',`${a}×${w} + ${c}×${x} = ${a*w+c*x}.`]},
+ R=>{const a=R(3,9),b=R(3,9),c=R(3,9),k=Math.ceil((a+b+c+2)/4),d=4*k-a-b-c;return [`Four designs hold ${a}, ${b}, ${c}, and ${d} kg. What is the average?`,k,'kg','Sum ÷ 4.',`${a+b+c+d} ÷ 4 = ${k} kg.`]},
+ R=>{const b=R(10,30),l=R(2,12);return [`Idea A scored ${b+l} points and idea B scored ${b}. By how many points does A lead?`,l,'points','Subtract.',`${b+l} − ${b} = ${l}.`]}],
+[R=>{const k=R(2,10),d=R(2,9);return [`A drawing is made at 1:${k}. A part is ${d*k} cm long in real life. How long is it in the drawing?`,d,'cm','Divide the real length by the scale.',`${d*k} ÷ ${k} = ${d} cm.`]},
+ R=>{const t=R(2,10)*10,p=[2,5,10][R(0,2)],a=t+t*p/100;return [`A board should be ${t} cm long but is cut to ${a} cm. What is the percent error?`,p,'%','|actual − target| ÷ target × 100',`${r2(a-t)} ÷ ${t} × 100 = ${p}%.`]},
+ R=>{const k=R(2,10),d=R(2,9);return [`A drawing at 1:${k} shows a part ${d} cm long. How long is the real part?`,d*k,'cm','Multiply the drawn length by the scale.',`${d} × ${k} = ${d*k} cm.`]}],
+[R=>{const a=R(10,15),b=R(10,15),c=R(10,15),k=Math.ceil((a+b+c+10)/4),d=4*k-a-b-c;return [`Four trials took ${a}, ${b}, ${c}, and ${d} seconds. What is the mean time?`,k,'s','Sum ÷ 4.',`${a+b+c+d} ÷ 4 = ${k} s.`]},
+ R=>{const o=R(1,5)*10,p=[10,20,25,50][R(0,3)],n=o+o*p/100;return [`Version 1 held ${o} N. Version 2 holds ${n} N. What is the percent improvement?`,p,'%','(new − old) ÷ old × 100',`${r2(n-o)} ÷ ${o} × 100 = ${p}%.`]},
+ R=>{const n=R(3,6),k=R(5,20);return [`The total time over ${n} trials was ${n*k} s. What was the mean time?`,k,'s','Total ÷ number of trials.',`${n*k} ÷ ${n} = ${k} s.`]}],
+[R=>{const g=R(2,10)*10,p=[60,70,75,80,90,110][R(0,5)],r=g*p/100;return [`The goal was ${g} N and the design held ${r} N. What percent of the goal was reached?`,p,'%','Result ÷ goal × 100.',`${r} ÷ ${g} × 100 = ${p}%.`]},
+ R=>{const b=R(2,6)*10,g=R(1,6)*5;return [`A graph shows the score rising from ${b} to ${b+g}. How many points did it improve?`,g,'points','Subtract.',`${b+g} − ${b} = ${g}.`]},
+ R=>{const a=R(10,20),b=R(10,20),c=R(10,20),k=Math.ceil((a+b+c+10)/4),d=4*k-a-b-c;return [`A bar graph shows ${a}, ${b}, ${c}, and ${d}. What is the mean?`,k,'','Sum ÷ 4.',`${a+b+c+d} ÷ 4 = ${k}.`]}]
+,[R=>{const a=R(2,90),p=[['km',1000,'m'],['m',100,'cm'],['kg',1000,'g'],['L',1000,'mL']][R(0,3)];return [`Convert ${a} ${p[0]} to ${p[2]}.`,a*p[1],p[2],'Multiply by the size of the prefix.',`${a} × ${p[1]} = ${a*p[1]} ${p[2]}.`]},
+ R=>{const m=R(2,9),e=R(2,5);return [`Write ${m} × 10^${e} as a regular number.`,m*10**e,'','Move the decimal point right.',`${m} × ${10**e} = ${m*10**e}.`]},
+ R=>{const a=R(2,9)*100,k=[10,100,1000][R(0,2)];return [`A wire is ${a*k} mm long. How many meters is that?`,a*k/1000,'m','Divide mm by 1000.',`${a*k} ÷ 1000 = ${a*k/1000} m.`]}]
+];
+const LABS={
+found:R=>{const c=R(5,30)*10;return [`Set Real length to ${c} cm. What does the 1:50 model measure?`,c/50,'cm','Read the Model value.',`${c} ÷ 50 = ${c/50} cm.`]},
+civil:R=>{const L=[10,12,15,20,30,40,60][R(0,6)];return [`Set the load to ${L} kN. What factor of safety does the model show?`,r2(60/L),'','Capacity (60 kN) ÷ load.',`60 ÷ ${L} = ${r2(60/L)}.`]},
+truss:R=>{const a=[20,30,40,45,50,60,70][R(0,6)],t=Math.round(1000/(2*Math.sin(a*Math.PI/180)));return [`Set the cable angle to ${a}°. What tension does each cable carry?`,t,'N','Read the tension from the model.',`T = 1000 ÷ (2 × sin ${a}°) ≈ ${t} N.`]},
+stress:R=>{const F=R(5,40)*100,A=R(10,40)*10,s=Math.round(F/(A/1e4));return [`Set force to ${F} N and area to ${A} cm². What stress does the model show?`,s,'Pa','Read the stress, or divide force by area in m².',`${F} ÷ ${A/1e4} = ${s} Pa.`]},
+motion:R=>{const v=R(2,9),t=R(2,10);return [`Set speed to ${v} m/s and time to ${t} s. How far does the object go?`,v*t,'m','Read the distance.',`${v} × ${t} = ${v*t} m.`]},
+lever:R=>{const a=[1,1.5,2,2.5,3,4][R(0,5)],p=Math.round(200/a);return [`Set the effort arm to ${a} m. How much push lifts the 400 N rock?`,p,'N','Read the push needed.',`MA = ${a} ÷ 0.5 = ${a/0.5}, so 400 ÷ ${a/0.5} = ${p} N.`]},
+mech:R=>{const N=R(2,8)*6,o=+(720/N).toFixed(1);return [`Set the driven gear to ${N} teeth. What is the output speed?`,o,'RPM','The driver is 12 teeth at 60 RPM.',`Ratio = ${N} ÷ 12 = ${N/12}, so 60 ÷ ${N/12} = ${o} RPM.`]},
+elec:R=>{const V=R(3,12),r=R(1,5)*100,i=+(V*1000/r).toFixed(1);return [`Set the battery to ${V} V and the resistor to ${r} Ω. What current does the model show?`,i,'mA','Read the current in mA.',`${V} ÷ ${r} = ${+(V/r).toFixed(4)} A = ${i} mA.`]},
+rseries:R=>{const a=R(1,10)*10,b=R(1,10)*10,p=+(a*b/(a+b)).toFixed(1);return [`Set R1 to ${a} Ω and R2 to ${b} Ω. What is the parallel total?`,p,'Ω','Read the Parallel value.',`${a}×${b} ÷ ${a+b} = ${p} Ω.`]},
+conc:R=>{const s=R(1,12)*5,w=R(2,10)*50,c=+(s/(s+w)*100).toFixed(1);return [`Set Salt to ${s} g and Water to ${w} g. What is the concentration?`,c,'%','Read the percent concentration.',`${s} ÷ ${s+w} × 100 = ${c}%.`]},
+chem:R=>{const p=R(1,6);return [`Set the pH to ${p}. How many times more acidic is it than neutral water (pH 7)?`,10**(7-p),'times','Each pH step is 10 times.',`${7-p} steps: 10^${7-p} = ${10**(7-p)}.`]},
+shield:R=>{const x=R(1,6)*2,r=+(100*.5**(x/2)).toFixed(1);return [`Set the shield to ${x} cm. How much radiation is left?`,r,'%','Read Radiation left.',`${x/2} half-value layers: 100 × (½)^${x/2} = ${r}%.`]},
+nuc:R=>{const d=R(1,7)*5,r=+(100*.5**(d/5)).toFixed(1);return [`Set the time to ${d} days. What percent is still radioactive?`,r,'%','Read Still radioactive.',`${d/5} half-lives: 100 × (½)^${d/5} = ${r}%.`]}
+};
+const U=(wk,title,mathT,idea,vocab,rules,ex,steps,fig,ch,qs)=>{
+ const si=SECT.findIndex(x=>x.ids.includes(wk)), sc=SECT[si], D=k=>(si+1)+'.'+(sc.ids.indexOf(wk)*5+k), G=GENS[wk-1], used=new Set(), Q=[]; let sd=0;
+ const mk=g=>{let x,k=0;do{x=g(mkR(wk*10007+(sd++)*7919+k*131));k++;}while(used.has(x[0])&&k<12);used.add(x[0]);return {t:'num',p:x[0],a:x[1],u:x[2],h:x[3],s:x[4]};};
+ const add=(d,q)=>{q.d=d;q.n=Q.filter(z=>z.d===d).length+1;q.id=`w${wk}d${d}q${q.n}`;Q.push(q);};
+ vocab.forEach(v=>add(1,{t:'mc',p:`Which term fits this description: “${v[1]}”`,o:vocab.map(x=>x[0]),a:vocab.indexOf(v),h:'Look back at the vocabulary list.',s:`${v[0]}: ${v[1]}`}));
+ qs.filter(q=>q.t==='mc').forEach(q=>add(1,q));
+ const w2=mk(G[0]), w3=mk(G[1]);
+ for(let i=0;i<9;i++)add(2,mk(G[i%3]));
+ for(let i=0;i<6;i++)add(3,mk(fig?LABS[fig]:G[i%3]));
+ qs.filter(q=>q.t==='num').forEach(q=>add(4,q));
+ for(let i=0;i<12;i++)add(4,mk(G[i%3]));
+ for(let i=0;i<8;i++)add(5,mk(G[i%3]));
+ const eb=`<span class="eyebrow">Chapter ${si+1} · ${sc.n} · ${title}</span>`;
+ const ex2=w=>`<div class="example"><span class="eyebrow">Another worked example</span><p>${w.p}</p><div class="steps"><span>${w.s}</span></div></div>`;
+ const days=[
+ {t:'Learn',qt:`${D(1)} · Knowledge check`,html:`${eb}<h2>${D(1)} · Learn: ${title}</h2><p class="bigidea">${idea}</p><div class="example"><span class="eyebrow">Real-world engineering</span><p>${RW[wk-1]}</p></div><h3>Vocabulary</h3><div class="vocab">${vocab.map(x=>`<div><b>${x[0]}</b>${x[1]}</div>`).join('')}</div>${fig?'<h3>Explore it first</h3>'+FIG(fig):''}<p class="cap">Read everything above, then answer the questions below. They use the vocabulary words.</p>`},
+ {t:'Math',qt:`${D(2)} · Math drills`,html:`${eb}<h2>${D(2)} · Math: ${mathT}</h2><div class="rules">${rules.map(x=>`<div class="rule"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div><div class="example"><span class="eyebrow">Worked example</span><p>${ex}</p><div class="steps">${steps.map(x=>`<span>${x}</span>`).join('')}</div></div>${ex2(w2)}${ex2(w3)}`},
+ {t:fig?'Lab':'Work',qt:fig?`${D(3)} · Lab tasks`:`${D(3)} · Work session problems`,html:`${eb}<h2>${D(3)} · ${fig?'Lab':'Work session'}</h2>${fig?FIG(fig):'<p>Use today to carry out the math from the second day on your own project. Then solve the problems below, which use the same skills.</p>'}${fig?'<p class="cap">Use the model above to answer each lab task. Set the sliders exactly as the task says.</p>':''}`},
+ {t:'Practice',qt:`${D(4)} · Practice problems`,html:`${eb}<h2>${D(4)} · Practice</h2><p class="bigidea">Plenty of problems on this section’s math. Use the hint if you get stuck. Show your work on paper as you go.</p>`},
+ {t:'Check',qt:`${D(5)} · Section check`,html:`${eb}<h2>${D(5)} · Section check and design challenge</h2><p class="bigidea">Finish the section check, then work on the design challenge and write your reflection.</p>`}];
+ const items=['Sketch my plan and list my criteria','Do the math and write it down','Build or run it and record my results','Improve it once and compare'];
+ return {id:'w'+wk,wk,fig,name:title,dn:D,title,color:sc.color,days,qs:Q,
+  after:()=>`<section class="example" id="d5"><span class="eyebrow">Design challenge</span><p>${ch}</p>${items.map((t,k)=>`<label class="chk"><input type="checkbox" data-chk="${wk}-${k}" ${S.chk&&S.chk[wk+'-'+k]?'checked':''}> ${t}</label>`).join('')}<label class="lbl" for="note">Reflection: what worked, and what would you change?</label><textarea id="note" data-note="${wk}" rows="4">${esc(S.notes&&S.notes[wk]||'')}</textarea></section>`};
+};
+const UNITS=[
+U(1,'The design process and measurement','units, scale, percent','Engineers solve problems with a repeatable design process: define the problem, research, brainstorm, prototype, test, and improve. Every measurement needs a unit, and SI units keep everyone on the same page.',
+ [['Criteria','What a good solution must do.'],['Constraints','Limits such as cost, time, or size.'],['Prototype','A first working model for testing.'],['Iteration','Repeating test and improve.'],['Trade-off','Giving up one thing to gain another.']],
+ [['Scale = model size ÷ real size','1:50 means 1 cm stands for 50 cm.'],['1 m = 100 cm = 1000 mm · 1 kg = 1000 g','Go to a smaller unit by multiplying.'],['Percent change = (new − old) ÷ old × 100','A negative answer is a decrease.']],
+ 'A bridge is 12 m long. How long is a 1:50 scale model?',['12 m = 1200 cm','1200 ÷ 50 = 24 cm'],'found',
+ 'Pick an everyday object. Write 3 criteria and 2 constraints with numbers, sketch 3 ideas, and make a quick model at a scale you choose.',
+ [mc('A phone case must cost less than $10. That limit is a…',['Criterion','Constraint','Prototype'],1,'It is a limit, not a goal.','A cost limit is a constraint.'),
+  nm('A model car is 1:25 scale. The real car is 4.5 m long. How long is the model?',18,'cm','Convert 4.5 m to cm first.','450 ÷ 25 = 18 cm.'),
+  nm('A prototype weighed 800 g. After a redesign it weighs 600 g. By what percent did the weight drop?',25,'%','(800 − 600) ÷ 800 × 100','200 ÷ 800 = 0.25, so 25%.')]),
+U(2,'Loads and forces','adding forces, weight, ratios','Civil engineers design structures that carry loads safely. Dead loads are the structure’s own weight and live loads change. A structure is safe when its capacity is well above the total load.',
+ [['Dead load','The weight of the structure itself.'],['Live load','People, cars, snow, and wind.'],['Tension','A stretching force.'],['Compression','A squeezing force.']],
+ [['Total load = dead load + live load','Add both before checking a design.'],['Factor of safety = capacity ÷ load','Real designs aim for 2 or more.'],['Weight (N) = mass (kg) × 9.8','Weight is a force.']],
+ 'A floor has a 40 kN dead load and a 25 kN live load. The beams hold 130 kN. What is the factor of safety?',['Total = 40 + 25 = 65 kN','FoS = 130 ÷ 65 = 2'],'civil',
+ 'Build a shelf or table from cardboard that holds a stack of books. Predict its capacity, add weight until it fails, then compute the actual factor of safety.',
+ [mc('A cable holding up a bridge deck is being stretched. That force is…',['Compression','Tension','Shear'],1,'Stretched, not squeezed.','Stretching is tension.'),
+  nm('A crate has a mass of 250 kg. What is its weight? (use 9.8)',2450,'N','Weight = mass × 9.8','250 × 9.8 = 2,450 N.'),
+  nm('A column can support 240 kN. The design load is 80 kN. What is the factor of safety?',3,'','Capacity ÷ load.','240 ÷ 80 = 3.')]),
+U(3,'Trusses and triangles','trigonometry and the Pythagorean theorem','Triangles are rigid, so trusses use them to spread loads through a bridge or roof. Trigonometry lets engineers find the forces and lengths in each triangle.',
+ [['Truss','A frame made of triangles.'],['Beam','A bar that carries loads sideways.'],['Shear','Layers sliding past each other.'],['Buckling','A slender part bowing under compression.']],
+ [['sin θ = opposite ÷ hypotenuse','Also cos θ = adjacent ÷ hypotenuse and tan θ = opposite ÷ adjacent.'],['a² + b² = c²','Finds the longest side of a right triangle.'],['Two cables at angle θ: T = W ÷ (2 sin θ)','Each cable carries this tension.']],
+ 'A 1000 N sign hangs from two cables, each 30° above horizontal. What is the tension in each?',['sin 30° = 0.5','T = 1000 ÷ (2 × 0.5) = 1000 N'],'truss',
+ 'Build a truss bridge from craft sticks or straws that spans 30 cm. Measure each angle, predict the strongest shape, and test it with weights.',
+ [nm('A ramp is 4 m long and rises 2 m. What is sin θ for the ramp angle?',0.5,'','Opposite ÷ hypotenuse.','2 ÷ 4 = 0.5.'),
+  nm('A right triangle has legs of 6 m and 8 m. How long is the hypotenuse?',10,'m','a² + b² = c²','36 + 64 = 100, so c = 10 m.'),
+  mc('Why do trusses use triangles?',['A triangle cannot change shape without a side bending','Triangles are cheaper','Triangles are lighter'],0,'Think about rigid shapes.','A triangle stays rigid, while a square can fold flat.')]),
+U(4,'Materials, stress and foundations','area, division, powers of ten','Materials fail when stress, the force on each unit of area, is more than they can handle. A foundation spreads a building’s weight over enough soil to stay stable.',
+ [['Stress','Force per unit of area.'],['Strength','The stress a material can take before failing.'],['Foundation','The base that carries a structure’s weight.'],['Torsion','A twisting force.']],
+ [['Stress = force ÷ area','In pascals (Pa) when force is in N and area in m².'],['Area: rectangle = L × W, circle = πr²','Use π = 3.14.'],['1 m² = 10,000 cm²','Convert before dividing.']],
+ 'A 50,000 N load sits on a footing 2 m by 2.5 m. What pressure does it put on the soil?',['Area = 2 × 2.5 = 5 m²','Pressure = 50,000 ÷ 5 = 10,000 Pa'],'stress',
+ 'Design a footing for a model tower. Calculate the area you need so the pressure on the sand or foam stays under the limit your teacher gives you.',
+ [nm('A 900 N force pushes on a post with a cross-section of 0.03 m². What is the stress?',30000,'Pa','Force ÷ area.','900 ÷ 0.03 = 30,000 Pa.'),
+  nm('A round column has a radius of 0.5 m. What is its cross-sectional area? (π = 3.14)',0.785,'m²','Area = πr²','3.14 × 0.25 = 0.785 m².'),
+  mc('Which footing spreads a building’s weight better?',['A wide footing','A narrow footing','They are the same'],0,'More area means less stress.','Wider area gives lower pressure on the soil.')]),
+U(5,'Motion, speed and graphs','rates, graphing, slope','Mechanical engineers start by describing motion. On a distance–time graph the slope is the speed, so a steeper line means a faster object.',
+ [['Speed','Distance covered per unit of time.'],['Velocity','Speed with a direction.'],['Acceleration','How quickly speed changes.'],['Slope','Rise ÷ run on a graph.']],
+ [['Speed = distance ÷ time','Distance = speed × time.'],['Acceleration = change in speed ÷ time','In m/s².'],['Slope = rise ÷ run','On a distance–time graph this is speed.']],
+ 'A conveyor moves a box 12 m in 8 s. What is its speed?',['12 ÷ 8 = 1.5 m/s'],'motion',
+ 'Build a ramp car and time it over 1 m on three ramp heights. Graph speed against ramp height and describe the trend.',
+ [nm('A robot arm moves 0.9 m in 1.5 s. What is its speed?',0.6,'m/s','Distance ÷ time.','0.9 ÷ 1.5 = 0.6 m/s.'),
+  nm('A car speeds up from 0 to 20 m/s in 4 s. What is its acceleration?',5,'m/s²','Change in speed ÷ time.','20 ÷ 4 = 5 m/s².'),
+  mc('On a distance–time graph, a steeper line means…',['Higher speed','Lower speed','No motion'],0,'Slope is speed.','Steeper slope means more distance in the same time.')]),
+U(6,'Forces, levers and mechanical advantage','proportions and solving for a variable','A force is a push or pull. Simple machines such as levers and pulleys multiply force by trading it for distance.',
+ [['Lever','A bar that turns on a fulcrum.'],['Fulcrum','The pivot point.'],['Mechanical advantage','How much a machine multiplies force.'],['Torque','A turning force.']],
+ [['Torque = force × distance','In newton-meters (N·m).'],['MA = effort distance ÷ load distance','Measured from the fulcrum.'],['Balanced lever: F₁ × d₁ = F₂ × d₂','Torques on both sides are equal.']],
+ 'A crowbar has 2 m on the effort side and 0.5 m on the load side. The rock weighs 400 N. What push do you need?',['MA = 2 ÷ 0.5 = 4','Push = 400 ÷ 4 = 100 N'],'lever',
+ 'Design a lever launcher or nutcracker. Choose the fulcrum position, calculate the MA, and test whether your prediction holds.',
+ [nm('You push a wrench with 40 N at 0.3 m from the bolt. What torque do you apply?',12,'N·m','Force × distance.','40 × 0.3 = 12 N·m.'),
+  nm('A lever has 3 m on the effort side and 0.5 m on the load side. What is its mechanical advantage?',6,'','Effort distance ÷ load distance.','3 ÷ 0.5 = 6.'),
+  mc('A seesaw balances when…',['Torques on both sides are equal','Both sides are the same length','Both people weigh the same'],0,'Think torque, not just weight.','A 600 N person close in can balance a 300 N person far out.')]),
+U(7,'Gears, energy and efficiency','ratios and percentages','Gears trade speed for torque. Energy is never destroyed, but friction turns some into heat, so real machines are less than 100% efficient.',
+ [['Gear ratio','Driven teeth ÷ driver teeth.'],['Efficiency','Useful work out ÷ energy in.'],['Kinetic energy','Energy of motion.'],['Potential energy','Stored energy from height.'],['Friction','A force that resists motion.']],
+ [['Gear ratio = driven teeth ÷ driver teeth','Above 1 means slower output and more torque.'],['Efficiency = useful output ÷ input × 100','Always below 100%.'],['KE = ½mv² · PE = mgh','g = 9.8 m/s².']],
+ 'A 12-tooth driver turns a 36-tooth gear at 60 RPM. What are the ratio and output speed?',['Ratio = 36 ÷ 12 = 3 : 1','Speed = 60 ÷ 3 = 20 RPM, with 3 times the torque'],'mech',
+ 'Build a gear train that slows a hand crank by exactly 4 : 1. Count teeth, predict the output speed, and measure it.',
+ [nm('A 12-tooth gear drives a 48-tooth gear. What is the gear ratio?',4,'','Driven ÷ driver.','48 ÷ 12 = 4.'),
+  nm('A 2 kg ball is held 5 m high. What is its potential energy? (g = 9.8)',98,'J','PE = m × g × h','2 × 9.8 × 5 = 98 J.'),
+  nm('A motor takes in 500 J and does 350 J of useful work. What is its efficiency?',70,'%','Useful ÷ input × 100.','350 ÷ 500 × 100 = 70%.')]),
+U(8,'Circuits and Ohm’s law','algebra: solving for a variable','Voltage pushes current through a circuit and resistance holds it back. Ohm’s law links all three, so knowing two lets you solve for the third.',
+ [['Voltage (V)','The electrical push, in volts.'],['Current (I)','Flow of charge, in amps.'],['Resistance (R)','Opposition to current, in ohms.'],['Insulator','A material that blocks current.']],
+ [['V = I × R','Ohm’s law.'],['I = V ÷ R · R = V ÷ I','The same law, rearranged.'],['P = V × I','Power in watts.']],
+ 'A 9 V battery is connected across a 450 Ω resistor. What are the current and the power?',['I = 9 ÷ 450 = 0.02 A (20 mA)','P = 9 × 0.02 = 0.18 W'],'elec',
+ 'Design a circuit that lights an LED safely from a 9 V battery. Choose a resistor so the current stays near 20 mA and show your algebra.',
+ [nm('A circuit has 12 V across a 40 Ω resistor. What current flows?',0.3,'A','I = V ÷ R','12 ÷ 40 = 0.3 A.'),
+  nm('A heater has 60 V across it and draws 2 A. What is its resistance?',30,'Ω','R = V ÷ I','60 ÷ 2 = 30 Ω.'),
+  nm('A device runs on 5 V and draws 2 A. How much power does it use?',10,'W','P = V × I','5 × 2 = 10 W.')]),
+U(9,'Series, parallel and power','fractions and reciprocals','In a series circuit the current has one path, so resistances add. In a parallel circuit current splits between branches, which lowers the total resistance.',
+ [['Series circuit','One path for current.'],['Parallel circuit','Branches that share current.'],['Power','The rate energy is used, in watts.'],['Microcontroller','A tiny programmable computer.']],
+ [['Series: R = R₁ + R₂','Resistors in a line add up.'],['Parallel: 1 ÷ R = 1 ÷ R₁ + 1 ÷ R₂','Two equal resistors give half the resistance.'],['Energy = power × time','Watt-hours (Wh).']],
+ 'Two 100 Ω resistors are connected. What is the total in series and in parallel?',['Series: 100 + 100 = 200 Ω','Parallel: 100 ÷ 2 = 50 Ω'],'rseries',
+ 'In a circuit simulator, build one series and one parallel circuit with two bulbs. Predict, then measure, the brightness and total current of each.',
+ [nm('Resistors of 30 Ω and 70 Ω are in series. What is the total resistance?',100,'Ω','Add them.','30 + 70 = 100 Ω.'),
+  nm('Two 60 Ω resistors are in parallel. What is the total resistance?',30,'Ω','Equal resistors: divide by 2.','60 ÷ 2 = 30 Ω.'),
+  nm('A 100 W bulb runs for 5 hours. How much energy does it use?',500,'Wh','Power × time.','100 × 5 = 500 Wh.')]),
+U(10,'Matter, mixtures and concentration','percentages, ratios, dilution','Chemical engineers work with matter in many forms. Mixtures can be separated by their properties, and concentration tells you how much of a substance is in a solution.',
+ [['Compound','Different atoms bonded together.'],['Mixture','Substances combined, not bonded.'],['Solution','An even mixture, like salt water.'],['Distillation','Separating liquids by boiling point.'],['Filtration','Separating solids from liquids.']],
+ [['Percent concentration = solute ÷ solution × 100','Use the mass of the whole solution.'],['Dilution: C₁V₁ = C₂V₂','Concentration times volume stays the same.'],['1 L = 1000 mL','Convert units first.']],
+ '15 g of salt is dissolved in 285 g of water. What is the percent concentration?',['Solution = 15 + 285 = 300 g','15 ÷ 300 × 100 = 5%'],'conc',
+ 'Design a water filter from sand, gravel, and cotton. Measure the cloudiness before and after, and calculate the percent of dirt removed.',
+ [nm('A solution has 8 g of sugar in 200 g of solution. What is the percent concentration?',4,'%','Solute ÷ solution × 100.','8 ÷ 200 × 100 = 4%.'),
+  nm('You dilute 100 mL of a 6% solution to 300 mL total. What is the new concentration?',2,'%','C₁V₁ = C₂V₂','6 × 100 = C₂ × 300, so C₂ = 2%.'),
+  mc('Which process separates sand from water?',['Distillation','Filtration','Combustion'],1,'Think of a coffee filter.','Filtration catches solids and lets liquid through.')]),
+U(11,'Reactions, pH and process design','exponents and yield','In a reaction atoms are rearranged, never lost, so mass in equals mass out. The pH scale uses powers of ten to measure acidity.',
+ [['Reaction','A change that forms new substances.'],['Catalyst','Speeds up a reaction without being used up.'],['Polymer','A long chain-like molecule, such as plastic.'],['pH','A scale of acidity from 0 to 14.']],
+ [['Conservation of mass','Mass of reactants = mass of products.'],['pH below 7 is acid, above 7 is base','Each pH step is a 10× change.'],['Percent yield = actual ÷ theoretical × 100','Real processes never reach 100%.']],
+ 'A reaction should make 50 g of product but makes 40 g. What is the percent yield?',['40 ÷ 50 × 100 = 80%'],'chem',
+ 'Plan a small process, like slime or red-cabbage pH indicator. Write the recipe as ratios, scale it up 5 times, and predict the yield.',
+ [nm('5 g of A reacts completely with 3 g of B in a sealed container. What is the total mass of products?',8,'g','Mass is conserved.','5 + 3 = 8 g.'),
+  nm('One solution has pH 3 and another has pH 5. How many times more acidic is the pH 3 solution?',100,'times','Each pH step is 10×.','Two steps: 10 × 10 = 100 times.'),
+  nm('A reaction should make 50 g but makes 40 g. What is the percent yield?',80,'%','Actual ÷ theoretical × 100.','40 ÷ 50 × 100 = 80%.')]),
+U(12,'Atoms and radiation','exponents and scientific notation','Atoms have a tiny nucleus surrounded by electrons. Unstable nuclei give off radiation, and shielding reduces how much reaches you.',
+ [['Isotope','Same element, different neutrons.'],['Radiation','Energy or particles from unstable nuclei.'],['Gamma radiation','The most penetrating type.'],['Shielding','Material that blocks radiation.']],
+ [['Mass number = protons + neutrons','Isotopes differ in mass number.'],['Alpha: paper · Beta: aluminum · Gamma: thick lead or concrete','Gamma is hardest to stop.'],['Scientific notation: 3.2 × 10⁴ = 32,000','Move the decimal 4 places right.']],
+ 'A shield’s half-value layer is 2 cm. Radiation starts at 100 units. How much gets through 6 cm?',['6 ÷ 2 = 3 half-value layers','100 → 50 → 25 → 12.5 units'],'shield',
+ 'Test shielding materials such as paper, foil, and books against a simulated source. Graph strength against thickness and find each half-value layer.',
+ [nm('An isotope has 6 protons and 8 neutrons. What is its mass number?',14,'','Protons + neutrons.','6 + 8 = 14.'),
+  nm('A shield cuts radiation in half every 2 cm. How much of 80 units gets through 6 cm?',10,'units','6 cm is 3 halvings.','80 → 40 → 20 → 10.'),
+  nm('Write 3.2 × 10⁴ as a regular number.',32000,'','Move the decimal 4 places right.','3.2 × 10,000 = 32,000.')]),
+U(13,'Reactors, energy and half-life','exponential decay and rates','A nuclear plant uses fission to heat water into steam that turns a turbine. Radioactive samples decay by half each half-life, which engineers use to plan waste storage and medical doses.',
+ [['Fission','Splitting a heavy nucleus.'],['Fusion','Joining light nuclei.'],['Half-life','Time for half a sample to decay.'],['Reactor','A system that controls a chain reaction.']],
+ [['Remaining = start × (½)^(time ÷ half-life)','Each half-life halves the amount.'],['Power = energy ÷ time','Watts (J/s).'],['Plant efficiency = electrical out ÷ heat in × 100','Most plants are about 33%.']],
+ 'A sample with a 5-day half-life starts at 80 g. How much is left after 10 days?',['10 days = 2 half-lives','80 → 40 → 20 g'],'nuc',
+ 'Simulate half-life with 100 coins: remove the tails each round, graph the counts, and compare your graph with the formula.',
+ [nm('An isotope has a half-life of 6 hours. How much of a 64 g sample remains after 18 hours?',8,'g','18 ÷ 6 = 3 half-lives.','64 → 32 → 16 → 8 g.'),
+  nm('A plant turns 1,000 MW of heat into 350 MW of electricity. What is its efficiency?',35,'%','Electrical ÷ heat × 100.','350 ÷ 1000 × 100 = 35%.'),
+  nm('A sample drops from 100% to 12.5% active. How many half-lives passed?',3,'','100 → 50 → 25 → …','100 → 50 → 25 → 12.5 is 3 halvings.')]),
+U(14,'Capstone: define the problem','measurement and budgets','Choose one field and a real problem. A strong problem statement says who needs what, and every criterion and constraint gets a number.',
+ [['Problem statement','Who needs what, and why.'],['Criteria','Measurable goals.'],['Constraints','Limits on cost, time, and materials.'],['Specification','A requirement written with numbers.']],
+ [['A good criterion has a number','Holds at least 2 kg, costs under $5, finishes in 10 s.'],['Budget used = sum of part costs','Add every part.'],['Percent of budget = spent ÷ budget × 100','Keep it under 100%.']],
+ 'The budget is $20. Parts cost $4.50, $6.25, and $3.25. What percent of the budget is used?',['Total = 4.50 + 6.25 + 3.25 = $14','14 ÷ 20 × 100 = 70%'],null,
+ 'Pick your field and write a one-paragraph problem statement with at least 3 numbered criteria and 2 constraints. Get your teacher’s OK.',
+ [mc('Which is the best criterion?',['Holds at least 2 kg','Looks cool','Is strong'],0,'It needs a number.','A measurable number can be tested.'),
+  nm('Parts cost $4.50, $6.25, and $3.25. What is the total spent?',14,'$','Add them.','4.50 + 6.25 + 3.25 = 14.'),
+  nm('A $20 budget has $14 spent. What percent is used?',70,'%','Spent ÷ budget × 100.','14 ÷ 20 × 100 = 70%.')]),
+U(15,'Capstone: research and brainstorm','weighted scores and averages','Research how others solved similar problems, then generate many ideas before choosing. A decision matrix scores each idea against your criteria so the choice is fair.',
+ [['Research','Learning what already exists.'],['Brainstorm','Making many ideas before judging.'],['Decision matrix','A table that scores ideas.'],['Weight','How important a criterion is.']],
+ [['Weighted score = Σ(score × weight)','Add up every criterion.'],['Mean = sum ÷ number of values','Use it to summarize research data.'],['A broken constraint beats a high score','Cross out ideas that break a limit.']],
+ 'Idea A scores 4 on strength (weight 3) and 2 on cost (weight 2). What is its weighted score?',['4 × 3 = 12','2 × 2 = 4','Total = 16'],null,
+ 'Sketch at least 3 designs. Build a decision matrix with 3 weighted criteria and choose your best idea.',
+ [nm('Idea B scores 5 on strength (weight 3) and 3 on cost (weight 2). What is its weighted score?',21,'','Score × weight, then add.','15 + 6 = 21.'),
+  nm('You research 4 similar designs that hold 3, 5, 4, and 4 kg. What is the average?',4,'kg','Sum ÷ count.','16 ÷ 4 = 4 kg.'),
+  mc('Brainstorming works best when you…',['Collect many ideas before judging them','Pick the first good idea','Only use ideas you have seen'],0,'Quantity first.','Judging comes after you have many ideas.')]),
+U(16,'Capstone: design and prototype','scale drawings and percent error','Turn your best idea into a labeled drawing with measurements, then build a prototype. Check dimensions before you cut anything. This is a flexible build section, so take the time it needs.',
+ [['Scale drawing','A drawing with a fixed ratio to real size.'],['Tolerance','How much a size may vary.'],['Bill of materials','A list of every part and its cost.'],['Percent error','How far a result is from the target.']],
+ [['Drawing length = real length ÷ scale factor','1:4 means 4 cm real is 1 cm drawn.'],['Percent error = |actual − target| ÷ target × 100','Smaller is better.'],['Measure twice, cut once','Check every size before building.']],
+ 'A drawing uses 1 cm for every 5 cm of real length. A part is 35 cm long. How long is it in the drawing?',['35 ÷ 5 = 7 cm'],null,
+ 'Draw your design to scale with labeled dimensions, list your materials, and build your prototype.',
+ [nm('A drawing scale is 1:4. A part is 28 cm long in real life. How long is it in the drawing?',7,'cm','Divide by 4.','28 ÷ 4 = 7 cm.'),
+  nm('You cut a board to 61.2 cm. The plan said 60 cm. What is the percent error?',2,'%','(61.2 − 60) ÷ 60 × 100','1.2 ÷ 60 × 100 = 2%.'),
+  mc('Why list tolerance on a drawing?',['It shows how much a size can vary','It shows the cost','It shows the color'],0,'Parts are never exact.','Tolerance sets the allowed variation in a measurement.')]),
+U(17,'Capstone: test and improve','means, percent improvement, variables','Test your prototype several times under the same conditions and average the results. Compare against your criteria, change one thing, and test again.',
+ [['Trial','One test run.'],['Mean','The average of the trials.'],['Variable','Something you can change.'],['Iteration','One improve-and-retest cycle.']],
+ [['Mean = sum ÷ number of trials','Use at least 3 trials.'],['Percent improvement = (new − old) ÷ old × 100','Compare version to version.'],['Change one variable at a time','Then you know what helped.']],
+ 'Three trials hold 2.0, 2.4, and 2.2 kg. What is the mean?',['Sum = 6.6','6.6 ÷ 3 = 2.2 kg'],null,
+ 'Run at least 3 trials of your first prototype, record them in a table, make one improvement, and run 3 more trials.',
+ [nm('Trials measured 12, 15, 13, and 12 seconds. What is the mean?',13,'s','Sum ÷ 4.','52 ÷ 4 = 13 s.'),
+  nm('Version 1 held 2.0 kg. Version 2 held 2.6 kg. What is the percent improvement?',30,'%','(new − old) ÷ old × 100','0.6 ÷ 2.0 × 100 = 30%.'),
+  mc('To learn which change helped, you should…',['Change one thing at a time','Change everything at once','Skip testing'],0,'Isolate each change.','Changing one variable at a time shows its effect.')]),
+U(18,'Capstone: present your results','graphs and percent of goal','Engineers share the problem, the design, the data, what changed, and what they would do next. A clear graph makes your results easy to check.',
+ [['Data table','Organized results.'],['Bar graph','Compares values by height.'],['Evidence','Data that supports a claim.'],['Conclusion','What the results show.']],
+ [['Percent of goal = result ÷ goal × 100','Report this for every criterion.'],['Label both axes with units','A graph without units cannot be checked.'],['Compare before and after','Show the improvement in numbers.']],
+ 'The goal was to hold 3 kg. Your final design held 2.7 kg. What percent of the goal did you reach?',['2.7 ÷ 3 × 100 = 90%'],null,
+ 'Present your project in 3 to 5 minutes with one graph, a before-and-after comparison, and a slide or poster. End with what you would try next.',
+ [nm('Your goal was 3 kg and the design held 2.7 kg. What percent of the goal did you reach?',90,'%','Result ÷ goal × 100.','2.7 ÷ 3 × 100 = 90%.'),
+  mc('A good graph must have…',['Labeled axes with units','A decorative border','Only a title'],0,'Others must be able to read it.','Units and labels make a graph readable.'),
+  mc('Which belongs in a conclusion?',['Whether the design met each criterion, backed by data','Only what went wrong','A list of materials'],0,'Claims need evidence.','A conclusion ties results to the criteria.')])
+,U(19,'Metric prefixes and powers of ten','prefixes and scientific notation','The metric system works in powers of ten. A prefix such as kilo or milli tells you how many times bigger or smaller a unit is, so converting is just moving the decimal point.',
+ [['Prefix','A word part that scales a unit.'],['Kilo','1000 times the base unit.'],['Milli','One thousandth of the base unit.'],['Scientific notation','A number written as m × 10^n.']],
+ [['kilo = 1000 · centi = 1/100 · milli = 1/1000','Bigger unit to smaller unit: multiply.'],['m × 10^n','Move the decimal n places right when n is positive.'],['Sanity check','A bigger unit means a smaller number.']],
+ 'A wire is 3500 mm long. How many meters is that?',['1 m = 1000 mm','3500 ÷ 1000 = 3.5 m'],null,
+ 'Measure five objects around you in the metric unit that fits each best. Write each in two units and in scientific notation.',
+ [mc('Which is the largest?',['1 km','1 m','1 mm'],0,'Kilo means 1000.','1 km is 1000 m.'),
+  nm('How many millimeters are in 2.5 m?',2500,'mm','Multiply by 1000.','2.5 × 1000 = 2500 mm.'),
+  mc('Going from kilograms to grams, the number gets…',['Bigger','Smaller','No change'],0,'The unit gets smaller.','A smaller unit needs more of them, so the number grows.')])
+];
+const ORD=SECT.flatMap(x=>x.ids);UNITS.sort((a,b)=>ORD.indexOf(a.wk)-ORD.indexOf(b.wk));
+const ALL = UNITS.flatMap(u=>u.qs);
+const CHEERS=['Nice work!','You got it!','Correct!','Nailed it!','Great job!','That’s right!'];
+
+const KEY='be-progress-v3';
+let S={q:{},tab:'w1',day:1,name:''};
+try{const raw=localStorage.getItem(KEY); if(raw) S=Object.assign(S,JSON.parse(raw));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const st=id=>S.q[id]||(S.q[id]={tries:0,done:false,how:null,hint:false,pick:[]});
+const unitDone=u=>u.qs.every(q=>S.q[q.id]&&S.q[q.id].done);
+const unitCount=u=>u.qs.filter(q=>S.q[q.id]&&S.q[q.id].done).length;
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Number.isInteger(n)?String(n):String(+n.toFixed(3));
+
+function setColor(){const u=UNITS.find(u=>u.id===S.tab);document.getElementById('sheet').style.setProperty('--u',`var(${u?u.color:'--u-sum'})`);}
+function renderMeter(){}
+function renderTabs(){
+  const cu=UNITS.find(u=>u.id===S.tab)||UNITS[0], ci=SECT.findIndex(x=>x.ids.includes(cu.wk));
+  const sc=document.getElementById('secs'); sc.innerHTML='';
+  SECT.forEach((x,k)=>{const b=document.createElement('button'); b.className='sec'; b.role='tab'; b.style.setProperty('--u',`var(${x.color})`); b.setAttribute('aria-selected',k===ci);
+    b.innerHTML=`<i></i>${k+1}. ${x.n}`; b.onclick=()=>{S.tab='w'+x.ids[0];S.day=1;save();render();scrollTo(0,0);}; sc.appendChild(b);});
+  const tabs=document.getElementById('tabs'); tabs.innerHTML='';
+  SECT[ci].ids.forEach(id=>{const u=UNITS.find(x=>x.wk===id), b=document.createElement('button'); b.className='wk'; b.role='tab';
+    b.style.setProperty('--u',`var(${u.color})`); b.setAttribute('aria-selected',S.tab===u.id); b.setAttribute('aria-label',u.name);
+    b.innerHTML=`<span><b>${u.title}</b><small>${u.dn(1)} to ${u.dn(5)}</small></span>`; b.onclick=()=>{S.tab=u.id;S.day=1;save();render();scrollTo(0,0);}; tabs.appendChild(b);});
+}
+
+const qSt=s=>!s.done?'':s.how==='revealed'?'rev':(s.tries||0)>0?'mid':'ok';
+function qHTML(q){
+  const s=S.q[q.id]||{}; const cls=qSt(s);
+  let h=`<div class="q ${cls}" data-id="${q.id}"><div class="qtop"><span class="qid">${q.n}</span><div class="qtext">${q.p}</div>`;
+  if(s.done) h+=`<span class="pill ${cls}">${cls==='ok'?'First try':cls==='mid'?'Got it':'Saw solution'}</span>`;
+  h+=`</div>`;
+  if(q.t==='num'){
+    h+=`<div class="ans"><input type="text" inputmode="decimal" id="in-${q.id}" aria-label="Your answer for ${q.id}" placeholder="?" ${s.done?'disabled':''} value="${s.done&&s.how==='correct'?esc(s.val??''):''}" autocomplete="off"><span class="unit">${q.u||''}</span>
+      ${s.done?'':`<button class="btn" data-act="check">Check</button><button class="btn ghost" data-act="hint">${s.hint?'Hide hint':'Hint'}</button>`}
+      ${!s.done&&s.tries>=2?`<button class="btn ghost" data-act="reveal">Show me how</button>`:''}</div>`;
+  }else{
+    h+=`<div class="choices">${q.o.map((o,i)=>{
+      let c='choice'; if((s.pick||[]).includes(i)) c+= i===q.a?' picked-ok':' picked-bad';
+      if(s.done&&i===q.a&&!c.includes('picked-ok')) c+=' picked-ok';
+      return `<button class="${c}" data-act="pick" data-i="${i}" ${s.done?'disabled':''}>${o}</button>`;}).join('')}
+      ${!s.done?`<button class="btn ghost" data-act="hint">${s.hint?'Hide hint':'Hint'}</button>`:''}
+      ${!s.done&&s.tries>=2?`<button class="btn ghost" data-act="reveal">Show me how</button>`:''}</div>`;
+  }
+  if(s.msg&&!s.done) h+=`<div class="fb bad">${s.msg}</div>`;
+  if(s.hint&&!s.done) h+=`<div class="hint"><strong>Hint:</strong> ${q.h}</div>`;
+  if(s.done) h+=`<div class="sol">${s.how==='correct'?`<strong>${s.cheer||'Nice work!'}</strong> `:'<strong>Here’s how:</strong> '}${q.s}</div>`;
+  return h+`</div>`;
+}
+
+function renderDayTabs(u){
+  const el=document.getElementById('daytabs'); if(!el) return; const d=S.day||1; el.innerHTML='';
+  const ci=SECT.findIndex(x=>x.ids.includes(u.wk)), cr=document.getElementById('crumb');
+  if(cr) cr.innerHTML=`<span>Chapter ${ci+1} · ${SECT[ci].n}</span><i>›</i><span>${u.title}</span><i>›</i><b>${u.dn(d)} ${u.days[d-1].t}</b>`;
+  u.days.forEach((x,k)=>{const dq=u.qs.filter(q=>q.d===k+1), n=dq.filter(q=>S.q[q.id]&&S.q[q.id].done).length;
+    const b=document.createElement('button'); b.className='dtab'+(n===dq.length?' done':''); b.role='tab'; b.setAttribute('aria-selected',d===k+1);
+    b.innerHTML=`<b>${u.dn(k+1)}</b><span>${x.t}</span><small>${n}/${dq.length}</small>`;
+    b.onclick=()=>{S.day=k+1;save();render();scrollTo(0,0);}; el.appendChild(b);});
+}
+function navRow(i,d){const go=k=>{const x=i*5+d-1+k; if(x<0||x>=UNITS.length*5) return ''; const ti=Math.floor(x/5),td=x%5+1,t=UNITS[ti];
+  return `<button class="btn${k<0?' ghost':''}" data-go="${ti},${td}">${k<0?'← ':'Next: '}${t.dn(td)} · ${t.days[td-1].t}${k>0?' →':''}</button>`;};
+  return `<div class="nextrow" style="justify-content:space-between;gap:10px;flex-wrap:wrap">${go(-1)||'<span></span>'}${go(1)}</div>`;}
+function renderUnit(u,i){
+  const d=Math.min(5,Math.max(1,S.day||1)), dd=u.days[d-1], dq=u.qs.filter(q=>q.d===d), sheet=document.getElementById('sheet');
+  sheet.innerHTML=`<div class="daytabs" id="daytabs" role="tablist" aria-label="Days of the week"></div><section class="lesson">${dd.html}${d===2&&u.wk===1?CONV():''}</section>
+    <div class="setHead"><h2>${dd.qt}</h2><span class="eyebrow"><span id="setCount">${dq.filter(q=>S.q[q.id]&&S.q[q.id].done).length} of ${dq.length} done</span> · <span class="tmr" data-k="w${u.wk}d${d}"></span></span></div>
+    <div class="qs">${dq.map(qHTML).join('')}</div>
+    ${d===5?u.after():''}<div id="doneArea">${doneHTML(u,i,d)}</div><div class="redorow" id="redoRow"><button class="btn ghost" data-redo>↺ Redo this section</button></div>${navRow(i,d)}`;
+  renderDayTabs(u); initFig(u); if(d===2&&u.wk===1) initConv(); updTmr();
+}
+
+const stampTime=()=>new Date().toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'});
+function lastDone(qs){const t=qs.map(q=>S.q[q.id]?.at||0).reduce((a,b)=>Math.max(a,b),0);
+  return t?new Date(t).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';}
+const fmtT=ms=>{const t=Math.round(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60);return h?`${h} h ${m} min`:m?`${m} min ${t%60} s`:`${t} s`;};
+const mmss=ms=>{const t=Math.round(ms/1000);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');};
+const hash4=str=>{let h=2166136261;for(const c of str){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return (h>>>0).toString(36).toUpperCase().padStart(4,'0').slice(-4);};
+function elapsedMs(k){const t=S.tm&&S.tm[k];if(!t)return 0;if(t.e)return t.a;const g=Date.now()-t.l;return t.a+(g<=300000?g:0);}
+function tmark(q){const k=q.id.replace(/q\d+$/,''),n=Date.now();S.tm=S.tm||{};const t=S.tm[k]||(S.tm[k]={s:n,l:n,a:0});if(!t.e){const g=n-t.l;t.a+=g<=300000?g:0;t.l=n;}}
+function tend(q){const u=UNITS.find(x=>x.qs.includes(q)),k=`w${u.wk}d${q.d}`,t=S.tm&&S.tm[k];if(t&&!t.e&&u.qs.filter(z=>z.d===q.d).every(z=>S.q[z.id]&&S.q[z.id].done))t.e=Date.now();}
+function updTmr(){document.querySelectorAll('.tmr').forEach(el=>{const t=S.tm&&S.tm[el.dataset.k];el.textContent=t&&t.s?'⏱ '+mmss(elapsedMs(el.dataset.k)):'⏱ starts with your first answer';});}
+setInterval(updTmr,1000);
+function codeText(u,d){const k=`w${u.wk}d${d}`,t=(S.tm&&S.tm[k])||{},dq=u.qs.filter(q=>q.d===d);S.nc=S.nc||{};
+  if(!S.nc[k]){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';S.nc[k]=Array.from({length:4},()=>A[Math.floor(Math.random()*A.length)]).join('');save();}
+  const sv=dq.filter(q=>S.q[q.id]?.how==='correct').length;
+  return S.nc[k]+'-'+hash4(`${S.name}|${u.dn(d)}|${t.e||0}|${Math.round((t.a||0)/1000)}|${sv}|${dq.length-sv}|${S.nc[k]}`);}
+function cardHTML(u,i,d){
+  d=Math.min(5,Math.max(1,d||S.day||1));
+  const dq=u.qs.filter(q=>q.d===d), tot=dq.length, k=`w${u.wk}d${d}`, t=(S.tm&&S.tm[k])||{};
+  const cnt={ok:0,mid:0,rev:0};dq.forEach(q=>cnt[qSt(S.q[q.id]||{})]++);const dl=u.days[d-1];
+  return `<section class="sub-card" id="subcard" aria-label="${u.dn(d)} completion card">
+    <div class="sc-head"><h3>${u.dn(d)} · ${dl.t}</h3><span class="stamp">COMPLETE!</span><span>${u.title}</span></div>
+    <div class="sc-body">
+      <div class="sc-row">
+        <div class="sc-field"><label for="nameIn-${u.id}">Name</label><input type="text" id="nameIn-${u.id}" class="nameIn" placeholder="Type your name" value="${esc(S.name)}" autocomplete="name"></div>
+        <div class="sc-field"><span class="lbl">Date and time</span><span class="val clock">${stampTime()}</span></div>
+      </div>
+      <div class="sc-row">
+        <div class="sc-field"><span class="lbl">Time on task</span><span class="val"><b>${t.s?fmtT(t.a):'—'}</b></span></div>
+        <div class="sc-field"><span class="lbl">First try · Retried · Saw solution</span><span class="val"><i class="dot ok"></i>${cnt.ok}<i class="dot mid"></i>${cnt.mid}<i class="dot rev"></i>${cnt.rev}</span></div>
+        <div class="sc-field"><span class="lbl">Code</span><span class="code ccode" data-u="${u.id}" data-d="${d}">${codeText(u,d)}</span></div>
+      </div>
+      <div class="chips mini">${dq.map(q=>{const s=S.q[q.id]||{};const c=qSt(s);return `<span class="chip ${c}">${q.n}${c==='ok'?'✓':c==='mid'?'◐':'●'}</span>`;}).join('')}</div>
+      <div class="fbline"><b>Feedback:</b> ${esc((S.fb&&S.fb[k])||'')}</div>
+    </div></section>`;
+}
+function doneHTML(u,i,d){
+  const dq=u.qs.filter(q=>q.d===d); if(!dq.every(q=>S.q[q.id]&&S.q[q.id].done)) return '';
+  const k=`w${u.wk}d${d}`; S.fb=S.fb||{};
+  if(S.fb[k]===undefined) return `<section class="example" id="fbbox"><span class="eyebrow">One last step</span><p><strong>Before your completion card appears:</strong> was anything confusing, broken, or wrong in ${u.dn(d)}, or is there anything that could be improved? Name the problem number if you can.</p><label class="lbl" for="fbText">Your feedback (leave it blank if everything was fine)</label><textarea id="fbText" rows="3" placeholder="Example: Problem 4 has the wrong unit."></textarea><div class="nextrow" style="justify-content:flex-start;margin-top:10px"><button class="btn" data-fb="${k}">Show my completion card</button></div></section>`;
+  return cardHTML(u,i,d);
+}
+function refreshCard(){
+  const el=document.getElementById('doneArea'); if(!el) return;
+  const i=UNITS.findIndex(u=>u.id===S.tab); if(i<0) return;
+  el.innerHTML=doneHTML(UNITS[i],i,S.day||1);
+}
+
+let gearRAF=null;
+function render(){
+  if(gearRAF){cancelAnimationFrame(gearRAF);gearRAF=null;}
+  setColor(); renderMeter(); renderTabs();
+  let i=UNITS.findIndex(u=>u.id===S.tab); if(i<0){i=0;S.tab=UNITS[0].id;}
+  renderUnit(UNITS[i],i);
+  renderFoot();
+}
+function rerenderQ(id){
+  const el=document.querySelector(`.q[data-id="${id}"]`); if(!el){render();return;}
+  const q=ALL.find(x=>x.id===id); el.outerHTML=qHTML(q);
+  const u=UNITS.find(u=>u.qs.includes(q));
+  renderMeter(); renderTabs(); renderDayTabs(u);
+  const sc=document.getElementById('setCount'); if(sc){const dq=u.qs.filter(x=>x.d===q.d); sc.textContent=`${dq.filter(x=>S.q[x.id]&&S.q[x.id].done).length} of ${dq.length} done`;}
+  refreshCard();
+  const inp=document.getElementById('in-'+id); if(inp&&!inp.disabled) inp.focus();
+}
+function win(s){s.done=true;s.how='correct';s.msg='';s.at=Date.now();s.cheer=CHEERS[Math.floor(Math.random()*CHEERS.length)];}
+
+document.addEventListener('input',e=>{
+  if(e.target.classList&&e.target.classList.contains('nameIn')){S.name=e.target.value;save();document.querySelectorAll('.ccode').forEach(el=>{const u=UNITS.find(x=>x.id===el.dataset.u);if(u)el.textContent=codeText(u,+el.dataset.d);});}
+});
+document.addEventListener('click',e=>{
+  const rd=e.target.closest('[data-redo],[data-redo-yes],[data-redo-no]');
+  if(rd){const u=UNITS.find(x=>x.id===S.tab)||UNITS[0],d=S.day||1,row=document.getElementById('redoRow');
+    if(rd.hasAttribute('data-redo')) row.innerHTML=`<span class="confirm">Erase your answers, time and feedback for ${u.dn(d)}? This can’t be undone. <button class="btn" data-redo-yes>Yes, redo it</button><button class="btn ghost" data-redo-no>Cancel</button></span>`;
+    else if(rd.hasAttribute('data-redo-no')) row.innerHTML='<button class="btn ghost" data-redo>↺ Redo this section</button>';
+    else{const k=`w${u.wk}d${d}`;u.qs.filter(q=>q.d===d).forEach(q=>delete S.q[q.id]);['tm','fb','nc'].forEach(f=>{if(S[f])delete S[f][k];});save();render();scrollTo(0,0);}
+    return;}
+  const fb=e.target.closest('[data-fb]');
+  if(fb){const k=fb.dataset.fb,m=k.match(/^w(\d+)d(\d)$/),u=UNITS.find(x=>x.wk===+m[1]);S.fb=S.fb||{};S.fb[k]=(document.getElementById('fbText').value||'').trim()||'No issues reported.';save();
+    document.getElementById('doneArea').innerHTML=cardHTML(u,UNITS.indexOf(u),+m[2]);document.getElementById('subcard').scrollIntoView({block:'start'});return;}
+  if(e.target.closest('[data-jump]')){document.getElementById('subcard')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});return;}
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const qel=b.closest('.q'); if(!qel) return; const id=qel.dataset.id; const q=ALL.find(x=>x.id===id); const s=st(id);
+  const act=b.dataset.act; tmark(q);
+  if(act==='hint'){s.hint=!s.hint;}
+  else if(act==='reveal'){s.done=true;s.how='revealed';s.at=Date.now();}
+  else if(act==='check'){ check(q,s,document.getElementById('in-'+id).value); }
+  else if(act==='pick'){ const i=+b.dataset.i; s.pick=s.pick||[]; if(!s.pick.includes(i))s.pick.push(i);
+    if(i===q.a) win(s); else {s.tries++;s.msg=s.tries>=2?'Not that one either. Try the hint, or tap “Show me how.”':'Not quite. Try another one!';} }
+  tend(q); save(); rerenderQ(id);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id&&e.target.id.startsWith('in-')){
+    const id=e.target.id.slice(3); const q=ALL.find(x=>x.id===id); const s=st(id);
+    tmark(q); check(q,s,e.target.value); tend(q); save(); rerenderQ(id);
+  }
+});
+function check(q,s,raw){
+  const v=parseFloat(String(raw).replace(/,/g,'').replace(/[^\d.\-]/g,' ').trim().split(/\s+/)[0]);
+  if(!isFinite(v)){s.msg='Type a number. The unit is already there for you.';return;}
+  const tol=Math.max(Math.abs(q.a)*0.01,q.tol||0);
+  if(Math.abs(v-q.a)<=tol){win(s);s.val=raw;}
+  else{s.tries++; s.msg = s.tries>=2?`${fmt(v)} isn’t it. Try the hint, or tap “Show me how.”`:`${fmt(v)} isn’t quite right. Give it another try!`;}
+}
+setInterval(()=>document.querySelectorAll('.clock').forEach(c=>c.textContent=stampTime()),30000);
+
+function renderFoot(){
+  const f=document.getElementById('footCtl');
+  f.innerHTML=`<button id="rst">Start over</button>`;
+  rst.onclick=()=>{f.innerHTML=`<span class="confirm">Erase all your answers? <button id="rY">Yes, erase</button><button id="rN">Cancel</button></span>`;
+    rY.onclick=()=>{S={q:{},tab:'w1',day:1,name:''};save();render();scrollTo(0,0);}; rN.onclick=renderFoot;};
+}
+
+function initFig(u){const f=FIGS[u.fig];if(!f)return;const el=document.querySelector('[data-fig]');if(!el)return;
+  const up=()=>{const v={};f.s.forEach(a=>{v[a[0]]=+document.getElementById('fg-'+a[0]).value;document.getElementById('fv-'+a[0]).textContent=v[a[0]]+' '+a[6];});
+    el.querySelector('svg').innerHTML=sv(f.v(v));el.querySelector('.readout').innerHTML=f.o(v).map(r=>`<span>${r[0]} <b>${r[1]}</b></span>`).join('');};
+  f.s.forEach(a=>document.getElementById('fg-'+a[0]).oninput=up);up();}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){const [ti,td]=g.dataset.go.split(',').map(Number);S.tab=UNITS[ti].id;S.day=td;save();render();scrollTo(0,0);return;}const n=e.target.closest('[data-nav]');if(n){S.day=+n.dataset.nav;save();render();scrollTo(0,0);}});
+document.addEventListener('change',e=>{const c=e.target.closest('[data-chk]');if(c){S.chk=S.chk||{};S.chk[c.dataset.chk]=c.checked;save();}});
+document.addEventListener('input',e=>{const t=e.target.closest('[data-note]');if(t){S.notes=S.notes||{};S.notes[t.dataset.note]=t.value;save();}});
+render();
+</script>
+</body>
+</html>
